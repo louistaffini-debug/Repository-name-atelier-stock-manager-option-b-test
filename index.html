@@ -1,1 +1,96 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Test Option B - GitHub Pages vers Apps Script</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <style>
+    body {
+      font-family: system-ui, Arial, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      line-height: 1.5;
+    }
+
+    button {
+      padding: 12px 18px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    pre {
+      background: #f4f4f4;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+
+    .ok {
+      color: green;
+      font-weight: bold;
+    }
+
+    .ko {
+      color: darkred;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Test Option B</h1>
+
+  <p>
+    Objectif : vérifier qu'une page GitHub Pages peut appeler une Web App Google Apps Script
+    et recevoir une réponse JSON.
+  </p>
+
+  <button id="testButton">Tester l'appel Apps Script</button>
+
+  <p id="status">Statut : en attente</p>
+
+  <pre id="result">Aucun appel effectué.</pre>
+
+  <script>
+    const WEB_APP_URL = "COLLER_ICI_L_URL_DE_LA_WEB_APP_APPS_SCRIPT";
+
+    const button = document.getElementById("testButton");
+    const status = document.getElementById("status");
+    const result = document.getElementById("result");
+
+    button.addEventListener("click", async () => {
+      status.textContent = "Statut : appel en cours...";
+      status.className = "";
+      result.textContent = "";
+
+      try {
+        const url = WEB_APP_URL + "?source=github-pages&ping=1&t=" + Date.now();
+
+        const response = await fetch(url, {
+          method: "GET",
+          cache: "no-store",
+          redirect: "follow"
+        });
+
+        if (!response.ok) {
+          throw new Error("Erreur HTTP : " + response.status + " " + response.statusText);
+        }
+
+        const data = await response.json();
+
+        status.textContent = "Statut : succès";
+        status.className = "ok";
+        result.textContent = JSON.stringify(data, null, 2);
+      } catch (error) {
+        status.textContent = "Statut : échec";
+        status.className = "ko";
+        result.textContent = error.message;
+        console.error(error);
+      }
+    });
+  </script>
+</body>
+</html>
