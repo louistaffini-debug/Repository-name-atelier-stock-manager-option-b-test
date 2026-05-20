@@ -44,6 +44,27 @@
       margin-top: 10px;
     }
 
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 14px;
+      font-weight: bold;
+    }
+
     button {
       padding: 10px 14px;
       font-size: 15px;
@@ -144,6 +165,12 @@
       white-space: pre-wrap;
       font-size: 13px;
     }
+
+    @media (max-width: 800px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 
@@ -156,8 +183,8 @@
   <section class="card">
     <h2>Connexion API</h2>
     <p>
-      Cette version permet de charger les équipements, de modifier leur statut
-      et d’afficher l’historique des changements.
+      Cette version permet de charger les équipements, d’ajouter un équipement,
+      de modifier leur statut et d’afficher l’historique des changements.
     </p>
 
     <div class="actions">
@@ -167,7 +194,54 @@
     </div>
 
     <p id="status">Statut : en attente</p>
-    <p class="small">Version attendue API : 0.5.0 ou supérieure</p>
+    <p class="small">Version attendue API : 0.7.0</p>
+  </section>
+
+  <section class="card">
+    <h2>Ajouter un équipement</h2>
+
+    <form id="addEquipementForm">
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="newCode">Code équipement</label>
+          <input id="newCode" type="text" placeholder="Ex : IMPR-P1S-01" required>
+        </div>
+
+        <div class="form-field">
+          <label for="newNom">Nom</label>
+          <input id="newNom" type="text" placeholder="Ex : Bambu Lab P1S" required>
+        </div>
+
+        <div class="form-field">
+          <label for="newFamille">Famille</label>
+          <input id="newFamille" type="text" placeholder="Ex : Fabrication additive" required>
+        </div>
+
+        <div class="form-field">
+          <label for="newEmplacement">Emplacement</label>
+          <input id="newEmplacement" type="text" placeholder="Ex : Zone impression 3D" required>
+        </div>
+
+        <div class="form-field">
+          <label for="newStatut">Statut initial</label>
+          <select id="newStatut" required>
+            <option value="Disponible">Disponible</option>
+            <option value="Utilisé">Utilisé</option>
+            <option value="Maintenance">Maintenance</option>
+            <option value="Hors service">Hors service</option>
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label for="newCommentaire">Commentaire</label>
+          <input id="newCommentaire" type="text" placeholder="Ex : Ajout depuis l’interface">
+        </div>
+
+        <div class="form-field full">
+          <button type="submit">Ajouter l’équipement</button>
+        </div>
+      </div>
+    </form>
   </section>
 
   <section class="card">
@@ -240,6 +314,7 @@
     const loadButton = document.getElementById("loadButton");
     const historyButton = document.getElementById("historyButton");
     const refreshAllButton = document.getElementById("refreshAllButton");
+    const addEquipementForm = document.getElementById("addEquipementForm");
 
     const statusElement = document.getElementById("status");
     const equipementsBody = document.getElementById("equipementsBody");
@@ -249,6 +324,7 @@
     loadButton.addEventListener("click", loadEquipements);
     historyButton.addEventListener("click", loadHistorique);
     refreshAllButton.addEventListener("click", refreshAll);
+    addEquipementForm.addEventListener("submit", addEquipement);
 
     async function refreshAll() {
       await loadEquipements();
@@ -317,6 +393,62 @@
         renderHistorique(data.historique);
 
         setStatus("Succès : historique chargé depuis Apps Script.", "ok");
+
+      } catch (error) {
+        console.error(error);
+        setStatus("Échec : " + error.message, "ko");
+        rawJson.textContent = error.message;
+      }
+    }
+
+    async function addEquipement(event) {
+      event.preventDefault();
+
+      setStatus("Ajout de l’équipement en cours...", "");
+
+      try {
+        const code = document.getElementById("newCode").value.trim();
+        const nom = document.getElementById("newNom").value.trim();
+        const famille = document.getElementById("newFamille").value.trim();
+        const emplacement = document.getElementById("newEmplacement").value.trim();
+        const statut = document.getElementById("newStatut").value;
+        const commentaire = document.getElementById("newCommentaire").value.trim();
+
+        const url =
+          WEB_APP_URL
+          + "?action=addEquipement"
+          + "&code=" + encodeURIComponent(code)
+          + "&nom=" + encodeURIComponent(nom)
+          + "&famille=" + encodeURIComponent(famille)
+          + "&emplacement=" + encodeURIComponent(emplacement)
+          + "&statut=" + encodeURIComponent(statut)
+          + "&commentaire=" + encodeURIComponent(commentaire)
+          + "&t=" + Date.now();
+
+        const response = await fetch(url, {
+          method: "GET",
+          cache: "no-store",
+          redirect: "follow"
+        });
+
+        if (!response.ok) {
+          throw new Error("Erreur HTTP : " + response.status + " " + response.statusText);
+        }
+
+        const data = await response.json();
+
+        rawJson.textContent = JSON.stringify(data, null, 2);
+
+        if (!data.ok) {
+          throw new Error(data.error || "Réponse API invalide");
+        }
+
+        setStatus("Succès : équipement ajouté.", "ok");
+
+        addEquipementForm.reset();
+
+        await loadEquipements();
+        await loadHistorique();
 
       } catch (error) {
         console.error(error);
