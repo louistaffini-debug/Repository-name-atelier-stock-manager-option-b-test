@@ -193,6 +193,11 @@
       <button id="refreshAllButton">Tout recharger</button>
     </div>
 
+    <div class="form-field" style="max-width: 260px; margin-top: 12px;">
+      <label for="writePin">Code atelier</label>
+      <input id="writePin" type="password" placeholder="Code requis pour ajouter/modifier">
+    </div>
+
     <p id="status">Statut : en attente</p>
     <p class="small">Version attendue API : 0.7.0</p>
   </section>
@@ -401,6 +406,10 @@
       }
     }
 
+    function getWritePin() {
+    return document.getElementById("writePin").value.trim();
+      }
+
     async function addEquipement(event) {
       event.preventDefault();
 
@@ -422,8 +431,9 @@
           + "&famille=" + encodeURIComponent(famille)
           + "&emplacement=" + encodeURIComponent(emplacement)
           + "&statut=" + encodeURIComponent(statut)
-          + "&commentaire=" + encodeURIComponent(commentaire)
-          + "&t=" + Date.now();
+         + "&commentaire=" + encodeURIComponent(commentaire)
+         + "&pin=" + encodeURIComponent(getWritePin())
+         + "&t=" + Date.now();
 
         const response = await fetch(url, {
           method: "GET",
@@ -547,6 +557,7 @@
           + "&id=" + encodeURIComponent(id)
           + "&statut=" + encodeURIComponent(statut)
           + "&commentaire=" + encodeURIComponent(commentaire)
+          + "&pin=" + encodeURIComponent(getWritePin())
           + "&t=" + Date.now();
 
         const response = await fetch(url, {
