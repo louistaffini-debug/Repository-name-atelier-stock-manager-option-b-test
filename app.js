@@ -214,6 +214,10 @@ function renderEmplacementsSelect() {
     return document.getElementById("writePin").value.trim();
       }
 
+    function getAdminPin() {
+    return document.getElementById("adminPin").value.trim();
+    }
+
     async function addEquipement(event) {
       event.preventDefault();
 
