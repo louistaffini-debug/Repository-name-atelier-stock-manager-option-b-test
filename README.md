@@ -1,6 +1,6 @@
 # Atelier Stock Manager - GitHub Pages
 
-Version V0.15 - stabilisation.
+Version V0.16 - optimisation smartphone / terrain.
 
 ## Fichiers
 
@@ -9,7 +9,7 @@ Version V0.15 - stabilisation.
 - `style.css` : mise en forme commune.
 - `fiche.html` / `fiche.js` : fiche individuelle équipement.
 - `qrcodes.html` / `qrcodes.js` : génération des QR codes.
-- `diagnostic.html` / `diagnostic.js` : diagnostic lecture seule V0.15.
+- `diagnostic.html` / `diagnostic.js` : diagnostic lecture seule V0.16.
 
 ## Test conseillé
 
@@ -20,4 +20,18 @@ Version V0.15 - stabilisation.
 5. Ouvrir `diagnostic.html` et lancer le diagnostic.
 6. Tester sur smartphone.
 7. Faire une copie de sauvegarde du Google Sheet.
-8. Créer une release GitHub V0.15.
+8. Créer une release GitHub V0.16.
+
+
+## V0.16 - Optimisation smartphone / usage terrain
+
+Cette version améliore l’usage après scan d’un QR code :
+
+- fiche équipement plus lisible sur smartphone ;
+- gros boutons de statut : Disponible, Utilisé, Maintenance, Hors service ;
+- modification du statut directement depuis `fiche.html` ;
+- champ commentaire rapide ;
+- rechargement automatique de la fiche et de l’historique après modification ;
+- conservation du code atelier pour les actions d’écriture.
+
+Le backend Apps Script reste compatible avec les actions existantes. La version API attendue est `0.16.0`.

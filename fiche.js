@@ -1,10 +1,29 @@
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzOy3GzEra_cO88DLC9bbqwwgUKXjJFZuIPI9rMXwWl1Q63zNaZmt4v3fR2vEppHX7BYg/exec";
 
+const STATUTS = [
+  "Disponible",
+  "Utilisé",
+  "Maintenance",
+  "Hors service"
+];
+
+let currentEquipement = null;
+let selectedStatut = null;
+
 const statusElement = document.getElementById("status");
 const rawJson = document.getElementById("rawJson");
 const reloadButton = document.getElementById("reloadButton");
+const saveQuickStatusButton = document.getElementById("saveQuickStatusButton");
 
 reloadButton.addEventListener("click", loadFiche);
+saveQuickStatusButton.addEventListener("click", saveQuickStatus);
+
+document.querySelectorAll(".quick-status").forEach(button => {
+  button.addEventListener("click", () => {
+    selectedStatut = button.dataset.statut;
+    renderQuickStatusSelection();
+  });
+});
 
 loadFiche();
 
@@ -54,7 +73,11 @@ async function loadEquipement(id) {
       throw new Error(data.error || "Réponse API invalide");
     }
 
-    renderEquipement(data.equipement);
+    currentEquipement = data.equipement;
+    selectedStatut = currentEquipement.statut || "Disponible";
+
+    renderEquipement(currentEquipement);
+    renderQuickStatusSelection();
 
     setStatus("Succès : fiche équipement chargée.", "ok");
 
@@ -97,18 +120,80 @@ async function loadHistoriqueEquipement(id) {
   }
 }
 
+async function saveQuickStatus() {
+  if (!currentEquipement || !currentEquipement.id) {
+    setStatus("Échec : aucun équipement chargé.", "ko");
+    return;
+  }
+
+  if (!selectedStatut) {
+    setStatus("Échec : aucun statut sélectionné.", "ko");
+    return;
+  }
+
+  const pin = document.getElementById("writePin").value.trim();
+  const commentaire = document.getElementById("quickCommentaire").value.trim();
+
+  setStatus("Enregistrement rapide en cours...", "");
+
+  try {
+    const url =
+      WEB_APP_URL
+      + "?action=updateStatut"
+      + "&id=" + encodeURIComponent(currentEquipement.id)
+      + "&statut=" + encodeURIComponent(selectedStatut)
+      + "&commentaire=" + encodeURIComponent(commentaire)
+      + "&pin=" + encodeURIComponent(pin)
+      + "&t=" + Date.now();
+
+    const response = await fetch(url, {
+      method: "GET",
+      cache: "no-store",
+      redirect: "follow"
+    });
+
+    if (!response.ok) {
+      throw new Error("Erreur HTTP : " + response.status + " " + response.statusText);
+    }
+
+    const data = await response.json();
+
+    rawJson.textContent = JSON.stringify(data, null, 2);
+
+    if (!data.ok) {
+      throw new Error(data.error || "Réponse API invalide");
+    }
+
+    setStatus("Succès : statut mis à jour depuis la fiche.", "ok");
+
+    await loadFiche();
+
+  } catch (error) {
+    console.error(error);
+    setStatus("Échec : " + error.message, "ko");
+    rawJson.textContent = error.message;
+  }
+}
+
 function renderEquipement(equipement) {
   document.getElementById("equipementTitle").textContent =
     String(equipement.code || "") + " - " + String(equipement.nom || "");
 
   document.getElementById("ficheId").textContent = equipement.id || "";
   document.getElementById("ficheCode").textContent = equipement.code || "";
-  document.getElementById("ficheNom").textContent = equipement.nom || "";
   document.getElementById("ficheFamille").textContent = equipement.famille || "";
   document.getElementById("ficheEmplacement").textContent = equipement.emplacement || "";
   document.getElementById("ficheCommentaire").textContent = equipement.commentaire || "";
+  document.getElementById("quickCommentaire").value = equipement.commentaire || "";
 
-  document.getElementById("ficheStatut").innerHTML = renderStatut(equipement.statut || "");
+  document.getElementById("ficheStatutHero").innerHTML = renderStatut(equipement.statut || "");
+}
+
+function renderQuickStatusSelection() {
+  document.querySelectorAll(".quick-status").forEach(button => {
+    const isSelected = button.dataset.statut === selectedStatut;
+    button.classList.toggle("selected", isSelected);
+  });
 }
 
 function renderHistorique(historique) {

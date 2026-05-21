@@ -1,6 +1,6 @@
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzOy3GzEra_cO88DLC9bbqwwgUKXjJFZuIPI9rMXwWl1Q63zNaZmt4v3fR2vEppHX7BYg/exec";
 const EXPECTED_REPOSITORY_PATH = "/atelier-stock-manager/";
-const MIN_API_VERSION = "0.15.0";
+const MIN_API_VERSION = "0.16.0";
 
 const statusElement = document.getElementById("status");
 const diagnosticBody = document.getElementById("diagnosticBody");

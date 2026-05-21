@@ -5,71 +5,94 @@
   <title>Fiche équipement - Atelier Stock Manager</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link rel="stylesheet" href="style.css?v=015">
+  <link rel="stylesheet" href="style.css?v=016">
 </head>
 
-<body>
-  <header>
+<body class="fiche-page">
+  <header class="mobile-header">
     <h1>Fiche équipement</h1>
-    <p class="subtitle">Atelier Stock Manager - fiche individuelle / lien QR stable</p>
+    <p class="subtitle">Atelier Stock Manager - usage terrain / smartphone</p>
   </header>
 
-  <section class="card">
+  <section class="card no-print">
     <div class="actions">
       <a href="index.html">
         <button type="button">Retour à l’accueil</button>
       </a>
-      <button id="reloadButton" type="button">Recharger la fiche</button>
+      <button id="reloadButton" type="button">Recharger</button>
       <a id="qrPageLink" href="qrcodes.html" target="_blank">
-        <button type="button" class="btn-secondary">Voir le QR code</button>
+        <button type="button" class="btn-secondary">QR code</button>
       </a>
     </div>
 
     <p id="status">Statut : en attente</p>
   </section>
 
-  <section class="card">
-    <h2 id="equipementTitle">Équipement</h2>
+  <section class="card fiche-hero">
+    <div class="fiche-hero-top">
+      <div>
+        <p class="small label-muted">Équipement</p>
+        <h2 id="equipementTitle">Chargement...</h2>
+      </div>
+      <div id="ficheStatutHero" class="fiche-statut-hero"></div>
+    </div>
 
-    <div class="table-container">
-      <table class="fiche-table">
-        <tbody>
-          <tr>
-            <th>ID</th>
-            <td id="ficheId"></td>
-          </tr>
-          <tr>
-            <th>Code</th>
-            <td id="ficheCode"></td>
-          </tr>
-          <tr>
-            <th>Nom</th>
-            <td id="ficheNom"></td>
-          </tr>
-          <tr>
-            <th>Famille</th>
-            <td id="ficheFamille"></td>
-          </tr>
-          <tr>
-            <th>Emplacement</th>
-            <td id="ficheEmplacement"></td>
-          </tr>
-          <tr>
-            <th>Statut</th>
-            <td id="ficheStatut"></td>
-          </tr>
-          <tr>
-            <th>Commentaire</th>
-            <td id="ficheCommentaire"></td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="fiche-info-grid">
+      <div class="info-tile">
+        <span>ID</span>
+        <strong id="ficheId"></strong>
+      </div>
+      <div class="info-tile">
+        <span>Code</span>
+        <strong id="ficheCode"></strong>
+      </div>
+      <div class="info-tile">
+        <span>Famille</span>
+        <strong id="ficheFamille"></strong>
+      </div>
+      <div class="info-tile">
+        <span>Emplacement</span>
+        <strong id="ficheEmplacement"></strong>
+      </div>
+    </div>
+
+    <div class="comment-box">
+      <span>Commentaire actuel</span>
+      <p id="ficheCommentaire"></p>
+    </div>
+  </section>
+
+  <section class="card mobile-action-card no-print">
+    <h2>Modification rapide</h2>
+    <p class="small">
+      Utilise cette zone après scan du QR code pour changer rapidement le statut depuis un smartphone.
+    </p>
+
+    <div class="form-field">
+      <label for="writePin">Code atelier</label>
+      <input id="writePin" type="password" autocomplete="off" placeholder="Code requis pour modifier">
+    </div>
+
+    <div class="status-button-grid" id="quickStatusButtons">
+      <button type="button" data-statut="Disponible" class="quick-status statut-button-disponible">Disponible</button>
+      <button type="button" data-statut="Utilisé" class="quick-status statut-button-utilise">Utilisé</button>
+      <button type="button" data-statut="Maintenance" class="quick-status statut-button-maintenance">Maintenance</button>
+      <button type="button" data-statut="Hors service" class="quick-status statut-button-hors-service">Hors service</button>
+    </div>
+
+    <div class="form-field">
+      <label for="quickCommentaire">Commentaire</label>
+      <textarea id="quickCommentaire" rows="3" placeholder="Ex : utilisation par groupe CPRP, maintenance à prévoir..."></textarea>
+    </div>
+
+    <div class="actions mobile-actions-full">
+      <button id="saveQuickStatusButton" type="button">Enregistrer la modification</button>
     </div>
   </section>
 
   <section class="card">
     <h2>Lien QR stable</h2>
-    <p>
+    <p class="small">
       Ce lien est celui à encoder dans le QR code de l’équipement.
     </p>
     <pre id="qrLink" class="qr-link-box"></pre>
@@ -78,7 +101,7 @@
   <section class="card">
     <h2>Historique de cet équipement</h2>
 
-    <div class="table-container">
+    <div class="table-container history-mobile-container">
       <table>
         <thead>
           <tr>
@@ -99,11 +122,11 @@
     </div>
   </section>
 
-  <section class="card">
+  <section class="card debug-card no-print">
     <h2>Réponse brute JSON</h2>
     <pre id="rawJson">Aucune réponse pour le moment.</pre>
   </section>
 
-  <script src="fiche.js?v=015"></script>
+  <script src="fiche.js?v=016"></script>
 </body>
 </html>
