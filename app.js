@@ -30,6 +30,8 @@
     addFamilleForm.addEventListener("submit", addFamille);
     addEmplacementForm.addEventListener("submit", addEmplacement);
 
+    loadReferentiels();
+
     async function refreshAll() {
       await loadEquipements();
       await loadHistorique();
