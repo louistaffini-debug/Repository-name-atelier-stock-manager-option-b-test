@@ -32,6 +32,109 @@
 
     loadReferentiels();
 
+async function loadReferentiels() {
+  await loadFamilles();
+  await loadEmplacements();
+}
+
+async function loadFamilles() {
+  try {
+    const url = WEB_APP_URL + "?action=listFamilles&t=" + Date.now();
+
+    const response = await fetch(url, {
+      method: "GET",
+      cache: "no-store",
+      redirect: "follow"
+    });
+
+    if (!response.ok) {
+      throw new Error("Erreur HTTP familles : " + response.status);
+    }
+
+    const data = await response.json();
+
+    if (!data.ok) {
+      throw new Error(data.error || "Erreur chargement familles");
+    }
+
+    familles = data.familles || [];
+    renderFamillesSelect();
+
+  } catch (error) {
+    console.error(error);
+    setStatus("Échec chargement familles : " + error.message, "ko");
+  }
+}
+
+async function loadEmplacements() {
+  try {
+    const url = WEB_APP_URL + "?action=listEmplacements&t=" + Date.now();
+
+    const response = await fetch(url, {
+      method: "GET",
+      cache: "no-store",
+      redirect: "follow"
+    });
+
+    if (!response.ok) {
+      throw new Error("Erreur HTTP emplacements : " + response.status);
+    }
+
+    const data = await response.json();
+
+    if (!data.ok) {
+      throw new Error(data.error || "Erreur chargement emplacements");
+    }
+
+    emplacements = data.emplacements || [];
+    renderEmplacementsSelect();
+
+  } catch (error) {
+    console.error(error);
+    setStatus("Échec chargement emplacements : " + error.message, "ko");
+  }
+}
+
+function renderFamillesSelect() {
+  const select = document.getElementById("newFamille");
+
+  select.innerHTML = "";
+
+  if (!familles || familles.length === 0) {
+    select.innerHTML = "<option value=''>Aucune famille disponible</option>";
+    return;
+  }
+
+  select.innerHTML = "<option value=''>Choisir une famille</option>";
+
+  familles.forEach(famille => {
+    const option = document.createElement("option");
+    option.value = famille.nomFamille;
+    option.textContent = famille.nomFamille;
+    select.appendChild(option);
+  });
+}
+
+function renderEmplacementsSelect() {
+  const select = document.getElementById("newEmplacement");
+
+  select.innerHTML = "";
+
+  if (!emplacements || emplacements.length === 0) {
+    select.innerHTML = "<option value=''>Aucun emplacement disponible</option>";
+    return;
+  }
+
+  select.innerHTML = "<option value=''>Choisir un emplacement</option>";
+
+  emplacements.forEach(emplacement => {
+    const option = document.createElement("option");
+    option.value = emplacement.nomEmplacement;
+    option.textContent = emplacement.nomEmplacement;
+    select.appendChild(option);
+  });
+}
+
     async function refreshAll() {
       await loadEquipements();
       await loadHistorique();
