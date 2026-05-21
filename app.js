@@ -182,6 +182,8 @@ async function addFamille(event) {
 
     addFamilleForm.reset();
     await loadFamilles();
+    await loadAdminFamilles();
+      
 
   } catch (error) {
     console.error(error);
@@ -229,6 +231,7 @@ async function addEmplacement(event) {
 
     addEmplacementForm.reset();
     await loadEmplacements();
+    await loadAdminEmplacements();
 
   } catch (error) {
     console.error(error);
