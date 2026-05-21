@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Fiche équipement - Atelier Stock Manager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="style.css?v=013">
+</head>
+
+<body>
+  <header>
+    <h1>Fiche équipement</h1>
+    <p class="subtitle">Atelier Stock Manager - fiche individuelle / lien QR stable</p>
+  </header>
+
+  <section class="card">
+    <div class="actions">
+      <a href="index.html">
+        <button type="button">Retour à l’accueil</button>
+      </a>
+      <button id="reloadButton" type="button">Recharger la fiche</button>
+    </div>
+
+    <p id="status">Statut : en attente</p>
+  </section>
+
+  <section class="card">
+    <h2 id="equipementTitle">Équipement</h2>
+
+    <div class="table-container">
+      <table class="fiche-table">
+        <tbody>
+          <tr>
+            <th>ID</th>
+            <td id="ficheId"></td>
+          </tr>
+          <tr>
+            <th>Code</th>
+            <td id="ficheCode"></td>
+          </tr>
+          <tr>
+            <th>Nom</th>
+            <td id="ficheNom"></td>
+          </tr>
+          <tr>
+            <th>Famille</th>
+            <td id="ficheFamille"></td>
+          </tr>
+          <tr>
+            <th>Emplacement</th>
+            <td id="ficheEmplacement"></td>
+          </tr>
+          <tr>
+            <th>Statut</th>
+            <td id="ficheStatut"></td>
+          </tr>
+          <tr>
+            <th>Commentaire</th>
+            <td id="ficheCommentaire"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Lien QR stable</h2>
+    <p>
+      Ce lien est celui à encoder dans le QR code de l’équipement.
+    </p>
+    <pre id="qrLink" class="qr-link-box"></pre>
+  </section>
+
+  <section class="card">
+    <h2>Historique de cet équipement</h2>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Date / heure</th>
+            <th>Ancien statut</th>
+            <th>Nouveau statut</th>
+            <th>Ancien commentaire</th>
+            <th>Nouveau commentaire</th>
+            <th>Source</th>
+          </tr>
+        </thead>
+        <tbody id="ficheHistoriqueBody">
+          <tr>
+            <td colspan="6">Aucun historique chargé.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Réponse brute JSON</h2>
+    <pre id="rawJson">Aucune réponse pour le moment.</pre>
+  </section>
+
+  <script src="fiche.js?v=013"></script>
+</body>
+</html>

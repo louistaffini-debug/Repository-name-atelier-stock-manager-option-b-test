@@ -1,4 +1,4 @@
-    body {
+body {
       font-family: system-ui, Arial, sans-serif;
       max-width: 1200px;
       margin: 40px auto;
@@ -211,3 +211,13 @@ hr {
   }
 }
 
+/* V0.13 - Fiche équipement */
+.qr-link-box {
+  background: #f4f4f4;
+  color: #222;
+  border: 1px solid #ddd;
+}
+
+.fiche-table th {
+  width: 220px;
+}
