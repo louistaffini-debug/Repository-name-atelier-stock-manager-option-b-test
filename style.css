@@ -319,3 +319,64 @@ hr {
     display: block;
   }
 }
+
+/* V0.15 - Diagnostic et stabilisation */
+.diagnostic-summary {
+  padding: 14px;
+  border-radius: 10px;
+  background: #f4f4f4;
+  font-weight: bold;
+}
+
+.diagnostic-ok {
+  background: #d9f7d9;
+  color: #166316;
+}
+
+.diagnostic-ko {
+  background: #ffd9d9;
+  color: #8a1f1f;
+}
+
+.diagnostic-ko-row {
+  background: #fff0f0;
+}
+
+.checklist {
+  display: grid;
+  gap: 10px;
+}
+
+.checklist label {
+  font-weight: normal;
+}
+
+.checklist input {
+  width: auto;
+  margin-right: 8px;
+}
+
+.no-print {
+  display: block;
+}
+
+@media print {
+  .no-print,
+  .actions,
+  #rawJson {
+    display: none !important;
+  }
+
+  body {
+    margin: 0;
+    padding: 12px;
+    background: white;
+  }
+
+  .card {
+    box-shadow: none;
+    border: 1px solid #ddd;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

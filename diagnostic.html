@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Diagnostic V0.15 - Atelier Stock Manager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="style.css?v=015">
+</head>
+
+<body>
+  <header>
+    <h1>Diagnostic V0.15</h1>
+    <p class="subtitle">Atelier Stock Manager - contrôle de stabilisation</p>
+  </header>
+
+  <section class="card no-print">
+    <div class="actions">
+      <a href="index.html"><button type="button">Retour à l’accueil</button></a>
+      <button id="runDiagnosticButton" type="button">Lancer le diagnostic</button>
+      <button id="printButton" type="button" class="btn-secondary">Imprimer le rapport</button>
+    </div>
+    <p id="status">Statut : en attente</p>
+    <p class="small">
+      Ce diagnostic ne modifie aucune donnée. Il teste uniquement les lectures et les liens stables.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Résumé</h2>
+    <div id="summaryBox" class="diagnostic-summary">
+      Diagnostic non lancé.
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Contrôles automatiques</h2>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Test</th>
+            <th>Résultat</th>
+            <th>Détail</th>
+          </tr>
+        </thead>
+        <tbody id="diagnosticBody">
+          <tr>
+            <td colspan="3">Aucun test lancé.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Liens détectés</h2>
+    <table>
+      <tbody>
+        <tr>
+          <th>Page actuelle</th>
+          <td id="currentUrl"></td>
+        </tr>
+        <tr>
+          <th>Accueil</th>
+          <td id="homeUrl"></td>
+        </tr>
+        <tr>
+          <th>Page QR codes</th>
+          <td id="qrUrl"></td>
+        </tr>
+        <tr>
+          <th>Exemple fiche</th>
+          <td id="ficheUrl"></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card">
+    <h2>Checklist manuelle V0.15</h2>
+    <div class="checklist">
+      <label><input type="checkbox"> Tester la page d’accueil sur ordinateur.</label>
+      <label><input type="checkbox"> Tester la page d’accueil sur smartphone.</label>
+      <label><input type="checkbox"> Ouvrir une fiche équipement depuis le tableau principal.</label>
+      <label><input type="checkbox"> Scanner un QR code depuis un smartphone.</label>
+      <label><input type="checkbox"> Vérifier que l’URL contient bien /atelier-stock-manager/.</label>
+      <label><input type="checkbox"> Vérifier que le code atelier bloque les écritures si absent.</label>
+      <label><input type="checkbox"> Vérifier que le code admin bloque les actions admin si absent.</label>
+      <label><input type="checkbox"> Faire une copie de sauvegarde du Google Sheet.</label>
+      <label><input type="checkbox"> Créer une release GitHub V0.15 stable.</label>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Réponse brute JSON</h2>
+    <pre id="rawJson">Aucune réponse pour le moment.</pre>
+  </section>
+
+  <script src="diagnostic.js?v=015"></script>
+</body>
+</html>
