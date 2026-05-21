@@ -117,6 +117,58 @@
       <button type="submit">Ajouter l’emplacement</button>
     </form>
   </div>
+    <hr>
+
+  <div class="actions">
+    <button id="loadAdminReferentielsButton" type="button">Charger les référentiels admin</button>
+  </div>
+
+  <div class="admin-ref-grid">
+    <div>
+      <h3>Familles</h3>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Famille</th>
+              <th>Ordre</th>
+              <th>État</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="adminFamillesBody">
+            <tr>
+              <td colspan="5">Aucune famille chargée.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div>
+      <h3>Emplacements</h3>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Emplacement</th>
+              <th>Description</th>
+              <th>Ordre</th>
+              <th>État</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="adminEmplacementsBody">
+            <tr>
+              <td colspan="6">Aucun emplacement chargé.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </section>
 
   <section class="card">
