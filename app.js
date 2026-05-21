@@ -140,6 +140,99 @@ function renderEmplacementsSelect() {
       await loadHistorique();
     }
 
+async function addFamille(event) {
+  event.preventDefault();
+
+  setStatus("Ajout de la famille en cours...", "");
+
+  try {
+    const nomFamille = document.getElementById("newNomFamille").value.trim();
+
+    const url =
+      WEB_APP_URL
+      + "?action=addFamille"
+      + "&nomFamille=" + encodeURIComponent(nomFamille)
+      + "&pin=" + encodeURIComponent(getAdminPin())
+      + "&t=" + Date.now();
+
+    const response = await fetch(url, {
+      method: "GET",
+      cache: "no-store",
+      redirect: "follow"
+    });
+
+    if (!response.ok) {
+      throw new Error("Erreur HTTP : " + response.status + " " + response.statusText);
+    }
+
+    const data = await response.json();
+
+    rawJson.textContent = JSON.stringify(data, null, 2);
+
+    if (!data.ok) {
+      throw new Error(data.error || "Réponse API invalide");
+    }
+
+    setStatus("Succès : famille ajoutée.", "ok");
+
+    addFamilleForm.reset();
+    await loadFamilles();
+
+  } catch (error) {
+    console.error(error);
+    setStatus("Échec : " + error.message, "ko");
+    rawJson.textContent = error.message;
+  }
+}
+
+async function addEmplacement(event) {
+  event.preventDefault();
+
+  setStatus("Ajout de l’emplacement en cours...", "");
+
+  try {
+    const nomEmplacement = document.getElementById("newNomEmplacement").value.trim();
+    const description = document.getElementById("newDescriptionEmplacement").value.trim();
+
+    const url =
+      WEB_APP_URL
+      + "?action=addEmplacement"
+      + "&nomEmplacement=" + encodeURIComponent(nomEmplacement)
+      + "&description=" + encodeURIComponent(description)
+      + "&pin=" + encodeURIComponent(getAdminPin())
+      + "&t=" + Date.now();
+
+    const response = await fetch(url, {
+      method: "GET",
+      cache: "no-store",
+      redirect: "follow"
+    });
+
+    if (!response.ok) {
+      throw new Error("Erreur HTTP : " + response.status + " " + response.statusText);
+    }
+
+    const data = await response.json();
+
+    rawJson.textContent = JSON.stringify(data, null, 2);
+
+    if (!data.ok) {
+      throw new Error(data.error || "Réponse API invalide");
+    }
+
+    setStatus("Succès : emplacement ajouté.", "ok");
+
+    addEmplacementForm.reset();
+    await loadEmplacements();
+
+  } catch (error) {
+    console.error(error);
+    setStatus("Échec : " + error.message, "ko");
+    rawJson.textContent = error.message;
+  }
+}
+
+
     async function loadEquipements() {
       setStatus("Chargement des équipements en cours...", "");
 
