@@ -87,6 +87,38 @@
   </form>
 </section>
 
+<section class="card">
+  <h2>Administration des référentiels</h2>
+
+  <p class="small">
+    Cette zone permet d’ajouter des familles et des emplacements sans modifier le code.
+    Elle nécessite le code admin.
+  </p>
+
+  <div class="form-field" style="max-width: 260px; margin-bottom: 16px;">
+    <label for="adminPin">Code admin</label>
+    <input id="adminPin" type="password" placeholder="Code admin">
+  </div>
+
+  <div class="form-grid">
+    <form id="addFamilleForm" class="form-field">
+      <label for="newNomFamille">Nouvelle famille</label>
+      <input id="newNomFamille" type="text" placeholder="Ex : Électroportatif" required>
+      <button type="submit">Ajouter la famille</button>
+    </form>
+
+    <form id="addEmplacementForm" class="form-field">
+      <label for="newNomEmplacement">Nouvel emplacement</label>
+      <input id="newNomEmplacement" type="text" placeholder="Ex : Armoire outils coupants" required>
+
+      <label for="newDescriptionEmplacement">Description</label>
+      <input id="newDescriptionEmplacement" type="text" placeholder="Ex : Rangement des fraises et forets">
+
+      <button type="submit">Ajouter l’emplacement</button>
+    </form>
+  </div>
+</section>
+
   <section class="card">
     <h2>Équipements atelier</h2>
 
