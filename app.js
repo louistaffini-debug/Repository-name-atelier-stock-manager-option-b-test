@@ -7,6 +7,9 @@
       "Hors service"
     ];
 
+    let familles = [];
+    let emplacements = [];
+
     const loadButton = document.getElementById("loadButton");
     const historyButton = document.getElementById("historyButton");
     const refreshAllButton = document.getElementById("refreshAllButton");
