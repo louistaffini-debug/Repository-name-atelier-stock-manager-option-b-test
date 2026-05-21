@@ -237,6 +237,244 @@ async function addEmplacement(event) {
   }
 }
 
+async function loadAdminReferentiels() {
+  setStatus("Chargement des référentiels admin en cours...", "");
+
+  try {
+    await loadAdminFamilles();
+    await loadAdminEmplacements();
+
+    setStatus("Succès : référentiels admin chargés.", "ok");
+
+  } catch (error) {
+    console.error(error);
+    setStatus("Échec : " + error.message, "ko");
+    rawJson.textContent = error.message;
+  }
+}
+
+async function loadAdminFamilles() {
+  const url =
+    WEB_APP_URL
+    + "?action=listFamillesAdmin"
+    + "&pin=" + encodeURIComponent(getAdminPin())
+    + "&t=" + Date.now();
+
+  const response = await fetch(url, {
+    method: "GET",
+    cache: "no-store",
+    redirect: "follow"
+  });
+
+  if (!response.ok) {
+    throw new Error("Erreur HTTP familles admin : " + response.status);
+  }
+
+  const data = await response.json();
+
+  rawJson.textContent = JSON.stringify(data, null, 2);
+
+  if (!data.ok) {
+    throw new Error(data.error || "Erreur chargement familles admin");
+  }
+
+  renderAdminFamilles(data.familles || []);
+}
+
+async function loadAdminEmplacements() {
+  const url =
+    WEB_APP_URL
+    + "?action=listEmplacementsAdmin"
+    + "&pin=" + encodeURIComponent(getAdminPin())
+    + "&t=" + Date.now();
+
+  const response = await fetch(url, {
+    method: "GET",
+    cache: "no-store",
+    redirect: "follow"
+  });
+
+  if (!response.ok) {
+    throw new Error("Erreur HTTP emplacements admin : " + response.status);
+  }
+
+  const data = await response.json();
+
+  rawJson.textContent = JSON.stringify(data, null, 2);
+
+  if (!data.ok) {
+    throw new Error(data.error || "Erreur chargement emplacements admin");
+  }
+
+  renderAdminEmplacements(data.emplacements || []);
+}
+
+function renderAdminFamilles(items) {
+  adminFamillesBody.innerHTML = "";
+
+  if (!items || items.length === 0) {
+    adminFamillesBody.innerHTML = "<tr><td colspan='5'>Aucune famille trouvée.</td></tr>";
+    return;
+  }
+
+  items.forEach(item => {
+    const active = isReferenceActive(item.actif);
+    const row = document.createElement("tr");
+
+    if (!active) {
+      row.classList.add("ref-inactive");
+    }
+
+    row.innerHTML = `
+      <td>${escapeHtml(item.idFamille)}</td>
+      <td>${escapeHtml(item.nomFamille)}</td>
+      <td>${escapeHtml(item.ordreAffichage)}</td>
+      <td>${active ? "Actif" : "Inactif"}</td>
+      <td></td>
+    `;
+
+    const actionCell = row.querySelector("td:last-child");
+    const button = document.createElement("button");
+
+    button.textContent = active ? "Désactiver" : "Réactiver";
+    button.className = active ? "btn-warning" : "btn-success";
+    button.addEventListener("click", () => setFamilleActive(item.idFamille, !active));
+
+    actionCell.appendChild(button);
+    adminFamillesBody.appendChild(row);
+  });
+}
+
+function renderAdminEmplacements(items) {
+  adminEmplacementsBody.innerHTML = "";
+
+  if (!items || items.length === 0) {
+    adminEmplacementsBody.innerHTML = "<tr><td colspan='6'>Aucun emplacement trouvé.</td></tr>";
+    return;
+  }
+
+  items.forEach(item => {
+    const active = isReferenceActive(item.actif);
+    const row = document.createElement("tr");
+
+    if (!active) {
+      row.classList.add("ref-inactive");
+    }
+
+    row.innerHTML = `
+      <td>${escapeHtml(item.idEmplacement)}</td>
+      <td>${escapeHtml(item.nomEmplacement)}</td>
+      <td>${escapeHtml(item.description)}</td>
+      <td>${escapeHtml(item.ordreAffichage)}</td>
+      <td>${active ? "Actif" : "Inactif"}</td>
+      <td></td>
+    `;
+
+    const actionCell = row.querySelector("td:last-child");
+    const button = document.createElement("button");
+
+    button.textContent = active ? "Désactiver" : "Réactiver";
+    button.className = active ? "btn-warning" : "btn-success";
+    button.addEventListener("click", () => setEmplacementActive(item.idEmplacement, !active));
+
+    actionCell.appendChild(button);
+    adminEmplacementsBody.appendChild(row);
+  });
+}
+
+async function setFamilleActive(idFamille, actif) {
+  setStatus("Mise à jour de la famille " + idFamille + "...", "");
+
+  try {
+    const url =
+      WEB_APP_URL
+      + "?action=setFamilleActive"
+      + "&idFamille=" + encodeURIComponent(idFamille)
+      + "&actif=" + encodeURIComponent(actif ? "true" : "false")
+      + "&pin=" + encodeURIComponent(getAdminPin())
+      + "&t=" + Date.now();
+
+    const response = await fetch(url, {
+      method: "GET",
+      cache: "no-store",
+      redirect: "follow"
+    });
+
+    if (!response.ok) {
+      throw new Error("Erreur HTTP : " + response.status + " " + response.statusText);
+    }
+
+    const data = await response.json();
+
+    rawJson.textContent = JSON.stringify(data, null, 2);
+
+    if (!data.ok) {
+      throw new Error(data.error || "Réponse API invalide");
+    }
+
+    setStatus("Succès : famille mise à jour.", "ok");
+
+    await loadFamilles();
+    await loadAdminFamilles();
+
+  } catch (error) {
+    console.error(error);
+    setStatus("Échec : " + error.message, "ko");
+    rawJson.textContent = error.message;
+  }
+}
+
+async function setEmplacementActive(idEmplacement, actif) {
+  setStatus("Mise à jour de l’emplacement " + idEmplacement + "...", "");
+
+  try {
+    const url =
+      WEB_APP_URL
+      + "?action=setEmplacementActive"
+      + "&idEmplacement=" + encodeURIComponent(idEmplacement)
+      + "&actif=" + encodeURIComponent(actif ? "true" : "false")
+      + "&pin=" + encodeURIComponent(getAdminPin())
+      + "&t=" + Date.now();
+
+    const response = await fetch(url, {
+      method: "GET",
+      cache: "no-store",
+      redirect: "follow"
+    });
+
+    if (!response.ok) {
+      throw new Error("Erreur HTTP : " + response.status + " " + response.statusText);
+    }
+
+    const data = await response.json();
+
+    rawJson.textContent = JSON.stringify(data, null, 2);
+
+    if (!data.ok) {
+      throw new Error(data.error || "Réponse API invalide");
+    }
+
+    setStatus("Succès : emplacement mis à jour.", "ok");
+
+    await loadEmplacements();
+    await loadAdminEmplacements();
+
+  } catch (error) {
+    console.error(error);
+    setStatus("Échec : " + error.message, "ko");
+    rawJson.textContent = error.message;
+  }
+}
+
+function isReferenceActive(value) {
+  if (value === true) {
+    return true;
+  }
+
+  const text = String(value).trim().toUpperCase();
+  return text === "TRUE" || text === "VRAI" || text === "1" || text === "OUI" || text === "YES";
+}
+
 
     async function loadEquipements() {
       setStatus("Chargement des équipements en cours...", "");
