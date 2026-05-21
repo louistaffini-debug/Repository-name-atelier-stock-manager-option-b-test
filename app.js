@@ -34,6 +34,7 @@
     addFamilleForm.addEventListener("submit", addFamille);
     addEmplacementForm.addEventListener("submit", addEmplacement);
 
+    loadAdminReferentielsButton.addEventListener("click", loadAdminReferentiels);
     loadReferentiels();
 
 async function loadReferentiels() {
