@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>QR codes équipements - Atelier Stock Manager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="style.css?v=014">
+</head>
+
+<body>
+  <header>
+    <h1>QR codes équipements</h1>
+    <p class="subtitle">Atelier Stock Manager - V0.14 - page imprimable</p>
+  </header>
+
+  <section class="card no-print">
+    <h2>Actions</h2>
+    <p>
+      Cette page génère les QR codes à partir des liens stables des fiches équipements.
+      Chaque QR code pointe vers <strong>fiche.html?id=...</strong>.
+    </p>
+
+    <div class="qr-toolbar">
+      <a href="index.html"><button type="button">Retour à l’accueil</button></a>
+      <button id="reloadButton" type="button">Recharger les QR codes</button>
+      <button id="printButton" type="button">Imprimer</button>
+    </div>
+
+    <p id="status">Statut : en attente</p>
+    <p class="small">
+      Astuce : <strong>qrcodes.html</strong> affiche tous les équipements,
+      tandis que <strong>qrcodes.html?id=EQ-001</strong> affiche uniquement un équipement.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2 class="no-print" id="pageTitle">QR codes à imprimer</h2>
+    <p class="print-only">Atelier Stock Manager - QR codes équipements</p>
+    <div id="qrGrid" class="qr-grid">
+      <p>Aucun QR code chargé.</p>
+    </div>
+  </section>
+
+  <section class="card debug-card no-print">
+    <h2>Réponse brute JSON</h2>
+    <pre id="rawJson">Aucune réponse pour le moment.</pre>
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="qrcodes.js?v=014"></script>
+</body>
+</html>

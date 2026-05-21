@@ -618,7 +618,7 @@ function isReferenceActive(value) {
       equipementsBody.innerHTML = "";
 
       if (!equipements || equipements.length === 0) {
-        equipementsBody.innerHTML = "<tr><td colspan='9'>Aucun équipement trouvé.</td></tr>";
+        equipementsBody.innerHTML = "<tr><td colspan='10'>Aucun équipement trouvé.</td></tr>";
         return;
       }
 
@@ -646,6 +646,11 @@ function isReferenceActive(value) {
           <td>
             <a href="fiche.html?id=${encodeURIComponent(equipement.id || "")}" target="_blank">
               <button type="button" class="btn-secondary">Fiche</button>
+            </a>
+          </td>
+          <td>
+            <a href="qrcodes.html?id=${encodeURIComponent(equipement.id || "")}" target="_blank">
+              <button type="button" class="btn-secondary">QR</button>
             </a>
           </td>
           <td>

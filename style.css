@@ -221,3 +221,101 @@ hr {
 .fiche-table th {
   width: 220px;
 }
+
+
+/* V0.14 - QR codes */
+.qr-toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.qr-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.qr-card {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 14px;
+  background: white;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.qr-card h3 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+}
+
+.qr-card p {
+  margin: 4px 0;
+}
+
+.qr-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 180px;
+  margin: 12px 0;
+}
+
+.qr-box img,
+.qr-box canvas {
+  max-width: 170px;
+  max-height: 170px;
+}
+
+.qr-url {
+  font-size: 11px;
+  word-break: break-all;
+  background: #f4f4f4;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.print-only {
+  display: none;
+}
+
+@media print {
+  body {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    background: white;
+  }
+
+  header,
+  .no-print,
+  #rawJson,
+  #status,
+  .debug-card {
+    display: none !important;
+  }
+
+  .card {
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+  .qr-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .qr-card {
+    border: 1px solid #000;
+    border-radius: 0;
+  }
+
+  .print-only {
+    display: block;
+  }
+}

@@ -17,6 +17,10 @@ async function loadFiche() {
   }
 
   document.getElementById("qrLink").textContent = window.location.href;
+  const qrPageLink = document.getElementById("qrPageLink");
+  if (qrPageLink) {
+    qrPageLink.href = "qrcodes.html?id=" + encodeURIComponent(id);
+  }
 
   await loadEquipement(id);
   await loadHistoriqueEquipement(id);
