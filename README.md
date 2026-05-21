@@ -1,1 +1,1 @@
-# Repository-name-atelier-stock-manager-option-b-test
+# atelier-stock-manager
