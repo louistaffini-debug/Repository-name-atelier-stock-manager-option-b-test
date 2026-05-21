@@ -18,6 +18,10 @@
     const addFamilleForm = document.getElementById("addFamilleForm");
     const addEmplacementForm = document.getElementById("addEmplacementForm");
 
+    const loadAdminReferentielsButton = document.getElementById("loadAdminReferentielsButton");
+    const adminFamillesBody = document.getElementById("adminFamillesBody");
+    const adminEmplacementsBody = document.getElementById("adminEmplacementsBody");
+
     const statusElement = document.getElementById("status");
     const equipementsBody = document.getElementById("equipementsBody");
     const historiqueBody = document.getElementById("historiqueBody");
