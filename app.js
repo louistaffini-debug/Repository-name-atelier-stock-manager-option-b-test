@@ -15,6 +15,9 @@
     const refreshAllButton = document.getElementById("refreshAllButton");
     const addEquipementForm = document.getElementById("addEquipementForm");
 
+    const addFamilleForm = document.getElementById("addFamilleForm");
+    const addEmplacementForm = document.getElementById("addEmplacementForm");
+
     const statusElement = document.getElementById("status");
     const equipementsBody = document.getElementById("equipementsBody");
     const historiqueBody = document.getElementById("historiqueBody");
