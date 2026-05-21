@@ -36,52 +36,56 @@
     <p class="small">Version attendue API : 0.10.0</p>
   </section>
 
-  <section class="card">
-    <h2>Ajouter un équipement</h2>
+ <section class="card">
+  <h2>Ajouter un équipement</h2>
 
-    <form id="addEquipementForm">
-      <div class="form-grid">
-        <div class="form-field">
-          <label for="newCode">Code équipement</label>
-          <input id="newCode" type="text" placeholder="Ex : IMPR-P1S-01" required>
-        </div>
-
-        <div class="form-field">
-          <label for="newNom">Nom</label>
-          <input id="newNom" type="text" placeholder="Ex : Bambu Lab P1S" required>
-        </div>
-
-        <div class="form-field">
-          <label for="newFamille">Famille</label>
-          <input id="newFamille" type="text" placeholder="Ex : Fabrication additive" required>
-        </div>
-
-        <div class="form-field">
-          <label for="newEmplacement">Emplacement</label>
-          <input id="newEmplacement" type="text" placeholder="Ex : Zone impression 3D" required>
-        </div>
-
-        <div class="form-field">
-          <label for="newStatut">Statut initial</label>
-          <select id="newStatut" required>
-            <option value="Disponible">Disponible</option>
-            <option value="Utilisé">Utilisé</option>
-            <option value="Maintenance">Maintenance</option>
-            <option value="Hors service">Hors service</option>
-          </select>
-        </div>
-
-        <div class="form-field">
-          <label for="newCommentaire">Commentaire</label>
-          <input id="newCommentaire" type="text" placeholder="Ex : Ajout depuis l’interface">
-        </div>
-
-        <div class="form-field full">
-          <button type="submit">Ajouter l’équipement</button>
-        </div>
+  <form id="addEquipementForm">
+    <div class="form-grid">
+      <div class="form-field">
+        <label for="newCode">Code équipement</label>
+        <input id="newCode" type="text" placeholder="Ex : FRAIS-VF2-01" required>
       </div>
-    </form>
-  </section>
+
+      <div class="form-field">
+        <label for="newNom">Nom</label>
+        <input id="newNom" type="text" placeholder="Ex : Centre d’usinage Haas VF2" required>
+      </div>
+
+      <div class="form-field">
+        <label for="newFamille">Famille</label>
+        <select id="newFamille" required>
+          <option value="">Chargement des familles...</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="newEmplacement">Emplacement</label>
+        <select id="newEmplacement" required>
+          <option value="">Chargement des emplacements...</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="newStatut">Statut initial</label>
+        <select id="newStatut" required>
+          <option value="Disponible">Disponible</option>
+          <option value="Utilisé">Utilisé</option>
+          <option value="Maintenance">Maintenance</option>
+          <option value="Hors service">Hors service</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label for="newCommentaire">Commentaire</label>
+        <input id="newCommentaire" type="text" placeholder="Ex : Ajout depuis l’interface">
+      </div>
+
+      <div class="form-field full">
+        <button type="submit">Ajouter l’équipement</button>
+      </div>
+    </div>
+  </form>
+</section>
 
   <section class="card">
     <h2>Équipements atelier</h2>
