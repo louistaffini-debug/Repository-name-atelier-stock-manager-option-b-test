@@ -27,6 +27,8 @@
     historyButton.addEventListener("click", loadHistorique);
     refreshAllButton.addEventListener("click", refreshAll);
     addEquipementForm.addEventListener("submit", addEquipement);
+    addFamilleForm.addEventListener("submit", addFamille);
+    addEmplacementForm.addEventListener("submit", addEmplacement);
 
     async function refreshAll() {
       await loadEquipements();
