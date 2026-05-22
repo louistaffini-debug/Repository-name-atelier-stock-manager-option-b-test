@@ -1,14 +1,17 @@
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzOy3GzEra_cO88DLC9bbqwwgUKXjJFZuIPI9rMXwWl1Q63zNaZmt4v3fR2vEppHX7BYg/exec";
 
 const previewButton = document.getElementById("previewButton");
+const migrateHistoriqueButton = document.getElementById("migrateHistoriqueButton");
 const statusElement = document.getElementById("status");
 const rawJson = document.getElementById("rawJson");
 const countsSummary = document.getElementById("countsSummary");
 const diffsSummary = document.getElementById("diffsSummary");
 const columnsSummary = document.getElementById("columnsSummary");
 const samplesSummary = document.getElementById("samplesSummary");
+const migrationResult = document.getElementById("migrationResult");
 
 previewButton.addEventListener("click", runMigrationPreview);
+migrateHistoriqueButton.addEventListener("click", runHistoriqueMigration);
 
 async function runMigrationPreview() {
   setStatus("Aperçu de migration en cours...", "");
@@ -45,6 +48,81 @@ async function runMigrationPreview() {
     setStatus("Échec : " + error.message, "ko");
     rawJson.textContent = error.message;
   }
+}
+
+async function runHistoriqueMigration() {
+  const confirmed = confirm(
+    "Cette action va écrire réellement les lignes manquantes de l’historique dans Grist.\n\n" +
+    "Elle ne modifie pas les équipements, les familles ni les emplacements.\n\n" +
+    "Continuer ?"
+  );
+
+  if (!confirmed) {
+    setStatus("Migration annulée par l’utilisateur.", "");
+    return;
+  }
+
+  setStatus("Migration réelle de l’historique en cours...", "");
+
+  try {
+    const pin = document.getElementById("adminPin").value.trim();
+    const url = WEB_APP_URL
+      + "?action=migrateHistoriqueSheetToGrist"
+      + "&pin=" + encodeURIComponent(pin)
+      + "&t=" + Date.now();
+
+    const response = await fetch(url, {
+      method: "GET",
+      cache: "no-store",
+      redirect: "follow"
+    });
+
+    if (!response.ok) {
+      throw new Error("Erreur HTTP : " + response.status + " " + response.statusText);
+    }
+
+    const data = await response.json();
+    rawJson.textContent = JSON.stringify(data, null, 2);
+
+    if (!data.ok) {
+      throw new Error(data.error || "Réponse API invalide");
+    }
+
+    renderMigrationResult(data.migration);
+    setStatus("Succès : migration de l’historique effectuée.", "ok");
+
+    await runMigrationPreview();
+
+  } catch (error) {
+    console.error(error);
+    setStatus("Échec : " + error.message, "ko");
+    rawJson.textContent = error.message;
+  }
+}
+
+function renderMigrationResult(migration) {
+  if (!migration) {
+    migrationResult.textContent = "Aucun résultat de migration.";
+    return;
+  }
+
+  migrationResult.innerHTML = `
+    <div class="table-container">
+      <table>
+        <tbody>
+          <tr><th>Table</th><td>${escapeHtml(migration.table || "Historique")}</td></tr>
+          <tr><th>Lignes Sheet</th><td>${migration.sheetCount}</td></tr>
+          <tr><th>Grist avant</th><td>${migration.gristBeforeCount}</td></tr>
+          <tr><th>Lignes à insérer</th><td>${migration.rowsToInsertCount}</td></tr>
+          <tr><th>Lignes insérées</th><td>${migration.insertedCount}</td></tr>
+          <tr><th>Lignes ignorées car déjà présentes</th><td>${migration.skippedAsAlreadyPresentCount}</td></tr>
+          <tr><th>Grist après</th><td>${migration.gristAfterCount}</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>Aperçu des lignes insérées</h3>
+    <pre>${escapeHtml(JSON.stringify(migration.insertedPreview || [], null, 2))}</pre>
+  `;
 }
 
 function renderPreview(preview) {

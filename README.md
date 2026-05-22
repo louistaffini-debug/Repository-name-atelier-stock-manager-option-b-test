@@ -60,3 +60,8 @@ Ajout d'une page `migration-test.html` permettant de générer un aperçu de mig
 - Mapping enrichi des colonnes `Equipements` et `Historique`.
 - Génération des champs `ficheUrl`, `qrUrl`, `action`, `utilisateur` en aperçu.
 - Aucune écriture dans Grist à cette étape.
+
+
+## V0.18c - Migration contrôlée de l’historique vers Grist
+
+Ajout d’un bouton dans `migration-test.html` pour migrer uniquement la table `Historique` depuis Google Sheet vers Grist. Les doublons sont évités via une clé technique basée sur le timestamp, l’ID équipement, le nouveau statut, le nouveau commentaire et la source.
