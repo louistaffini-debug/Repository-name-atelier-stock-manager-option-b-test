@@ -77,3 +77,10 @@ La version V0.19 ajoute un mode de lecture depuis Grist sans remplacer le mode t
 - QR Grist : `qrcodes.html?source=grist`
 
 En mode Grist V0.19, l'application est volontairement en lecture seule : les ajouts et modifications restent désactivés.
+
+
+## V0.19b - Correctif lecture Grist
+
+- Correction de l’affichage des dates Grist : timestamp Unix en secondes converti en date/heure JavaScript.
+- Désactivation visuelle des contrôles d’écriture dans le tableau général en mode `?source=grist`.
+- Aucun changement backend : Apps Script reste en version 0.19.0.

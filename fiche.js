@@ -36,7 +36,7 @@ function initSourceMode() {
   const subtitle = document.querySelector(".subtitle");
   if (subtitle) {
     subtitle.textContent = IS_GRIST_MODE
-      ? "Atelier Stock Manager - fiche individuelle / Grist lecture seule"
+      ? "Atelier Stock Manager - fiche individuelle / Grist lecture seule / correctif 0.19b"
       : "Atelier Stock Manager - fiche individuelle / Google Sheet";
   }
 
@@ -301,7 +301,18 @@ function formatDate(value) {
     return "";
   }
 
-  const date = new Date(value);
+  let date;
+
+  if (typeof value === "number") {
+    // Grist renvoie les dates/heures sous forme de timestamp Unix en secondes.
+    // JavaScript attend des millisecondes : on convertit si la valeur est petite.
+    date = new Date(value < 100000000000 ? value * 1000 : value);
+  } else if (/^\d+(\.\d+)?$/.test(String(value).trim())) {
+    const numericValue = Number(value);
+    date = new Date(numericValue < 100000000000 ? numericValue * 1000 : numericValue);
+  } else {
+    date = new Date(value);
+  }
 
   if (isNaN(date.getTime())) {
     return value;

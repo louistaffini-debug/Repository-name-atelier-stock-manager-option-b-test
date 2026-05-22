@@ -88,8 +88,8 @@ function initSourceMode() {
   const statusInfo = document.querySelector("#status")?.nextElementSibling;
   if (statusInfo) {
     statusInfo.textContent = IS_GRIST_MODE
-      ? "Version attendue API : 0.19.0 - Source : Grist lecture seule"
-      : "Version attendue API : 0.19.0 - Source : Google Sheet";
+      ? "Version attendue API : 0.19.0 - Source : Grist lecture seule / correctif frontend 0.19b"
+      : "Version attendue API : 0.19.0 - Source : Google Sheet / correctif frontend 0.19b";
   }
 
   const modeBar = document.createElement("div");
@@ -742,12 +742,13 @@ function isReferenceActive(value) {
           <td>${escapeHtml(equipement.famille)}</td>
           <td>${escapeHtml(equipement.emplacement)}</td>
           <td>${renderStatut(statut)}</td>
-          <td>${renderStatutSelect(id, statut)}</td>
+          <td>${renderStatutSelect(id, statut, IS_GRIST_MODE)}</td>
           <td>
             <input
               id="commentaire-${id}"
               type="text"
               value="${escapeHtml(commentaire)}"
+              ${IS_GRIST_MODE ? "disabled" : ""}
             >
           </td>
           <td>
@@ -761,7 +762,7 @@ function isReferenceActive(value) {
             </a>
           </td>
           <td>
-            <button onclick="saveStatut('${id}')">Enregistrer</button>
+            <button onclick="saveStatut('${id}')" ${IS_GRIST_MODE ? "disabled" : ""}>${IS_GRIST_MODE ? "Lecture seule" : "Enregistrer"}</button>
           </td>
         `;
 
@@ -795,14 +796,14 @@ function isReferenceActive(value) {
       });
     }
 
-    function renderStatutSelect(id, selectedStatut) {
+    function renderStatutSelect(id, selectedStatut, disabled = false) {
       const options = STATUTS.map(statut => {
         const selected = statut === selectedStatut ? "selected" : "";
         return `<option value="${escapeHtml(statut)}" ${selected}>${escapeHtml(statut)}</option>`;
       }).join("");
 
       return `
-        <select id="statut-${escapeHtml(id)}">
+        <select id="statut-${escapeHtml(id)}" ${disabled ? "disabled" : ""}>
           ${options}
         </select>
       `;
@@ -882,7 +883,18 @@ function isReferenceActive(value) {
         return "";
       }
 
-      const date = new Date(value);
+      let date;
+
+      if (typeof value === "number") {
+        // Grist renvoie les dates/heures sous forme de timestamp Unix en secondes.
+        // JavaScript attend des millisecondes : on convertit si la valeur est petite.
+        date = new Date(value < 100000000000 ? value * 1000 : value);
+      } else if (/^\d+(\.\d+)?$/.test(String(value).trim())) {
+        const numericValue = Number(value);
+        date = new Date(numericValue < 100000000000 ? numericValue * 1000 : numericValue);
+      } else {
+        date = new Date(value);
+      }
 
       if (isNaN(date.getTime())) {
         return value;
