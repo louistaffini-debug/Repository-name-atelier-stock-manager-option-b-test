@@ -1,5 +1,8 @@
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzOy3GzEra_cO88DLC9bbqwwgUKXjJFZuIPI9rMXwWl1Q63zNaZmt4v3fR2vEppHX7BYg/exec";
 
+const DATA_SOURCE = getQueryParam("source") === "grist" ? "grist" : "sheet";
+const IS_GRIST_MODE = DATA_SOURCE === "grist";
+
 const STATUTS = [
   "Disponible",
   "Utilisé",
@@ -25,7 +28,50 @@ document.querySelectorAll(".quick-status").forEach(button => {
   });
 });
 
+initSourceMode();
 loadFiche();
+
+
+function initSourceMode() {
+  const subtitle = document.querySelector(".subtitle");
+  if (subtitle) {
+    subtitle.textContent = IS_GRIST_MODE
+      ? "Atelier Stock Manager - fiche individuelle / Grist lecture seule"
+      : "Atelier Stock Manager - fiche individuelle / Google Sheet";
+  }
+
+  const firstCard = document.querySelector("section.card");
+  if (firstCard) {
+    const modeBar = document.createElement("div");
+    modeBar.className = IS_GRIST_MODE ? "source-banner source-grist" : "source-banner source-sheet";
+    modeBar.innerHTML = IS_GRIST_MODE
+      ? "Mode actif : <strong>Grist lecture seule</strong>. Les modifications sont désactivées dans ce mode test."
+      : "Mode actif : <strong>Google Sheet</strong>. Modification terrain active.";
+    firstCard.insertBefore(modeBar, firstCard.firstChild);
+  }
+
+  if (IS_GRIST_MODE) {
+    document.getElementById("writePin").disabled = true;
+    document.getElementById("quickCommentaire").disabled = true;
+    saveQuickStatusButton.disabled = true;
+  }
+}
+
+function buildPageUrl(page, params = {}) {
+  const url = new URL(page, window.location.href);
+
+  Object.keys(params).forEach(key => {
+    if (params[key] !== undefined && params[key] !== null && params[key] !== "") {
+      url.searchParams.set(key, params[key]);
+    }
+  });
+
+  if (IS_GRIST_MODE) {
+    url.searchParams.set("source", "grist");
+  }
+
+  return url.pathname.split("/").pop() + url.search;
+}
 
 async function loadFiche() {
   const id = getQueryParam("id");
@@ -38,7 +84,7 @@ async function loadFiche() {
   document.getElementById("qrLink").textContent = window.location.href;
   const qrPageLink = document.getElementById("qrPageLink");
   if (qrPageLink) {
-    qrPageLink.href = "qrcodes.html?id=" + encodeURIComponent(id);
+    qrPageLink.href = buildPageUrl("qrcodes.html", { id: id });
   }
 
   await loadEquipement(id);
@@ -51,7 +97,7 @@ async function loadEquipement(id) {
   try {
     const url =
       WEB_APP_URL
-      + "?action=getEquipement"
+      + "?action=" + encodeURIComponent(IS_GRIST_MODE ? "getEquipementGrist" : "getEquipement")
       + "&id=" + encodeURIComponent(id)
       + "&t=" + Date.now();
 
@@ -92,7 +138,7 @@ async function loadHistoriqueEquipement(id) {
   try {
     const url =
       WEB_APP_URL
-      + "?action=listHistoriqueEquipement"
+      + "?action=" + encodeURIComponent(IS_GRIST_MODE ? "listHistoriqueEquipementGrist" : "listHistoriqueEquipement")
       + "&id=" + encodeURIComponent(id)
       + "&t=" + Date.now();
 
@@ -121,6 +167,11 @@ async function loadHistoriqueEquipement(id) {
 }
 
 async function saveQuickStatus() {
+  if (IS_GRIST_MODE) {
+    setStatus("Mode Grist lecture seule : modification de statut désactivée.", "ko");
+    return;
+  }
+
   if (!currentEquipement || !currentEquipement.id) {
     setStatus("Échec : aucun équipement chargé.", "ko");
     return;

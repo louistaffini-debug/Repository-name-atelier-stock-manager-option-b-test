@@ -1,5 +1,8 @@
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzOy3GzEra_cO88DLC9bbqwwgUKXjJFZuIPI9rMXwWl1Q63zNaZmt4v3fR2vEppHX7BYg/exec";
 
+    const DATA_SOURCE = getDataSource();
+    const IS_GRIST_MODE = DATA_SOURCE === "grist";
+
     const STATUTS = [
       "Disponible",
       "Utilisé",
@@ -35,7 +38,91 @@
     addEmplacementForm.addEventListener("submit", addEmplacement);
 
     loadAdminReferentielsButton.addEventListener("click", loadAdminReferentiels);
+    initSourceMode();
     loadReferentiels();
+
+
+function getDataSource() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("source") === "grist" ? "grist" : "sheet";
+}
+
+function buildApiUrl(action, params = {}) {
+  const searchParams = new URLSearchParams();
+  searchParams.set("action", action);
+
+  Object.keys(params).forEach(key => {
+    if (params[key] !== undefined && params[key] !== null) {
+      searchParams.set(key, params[key]);
+    }
+  });
+
+  searchParams.set("t", Date.now());
+  return WEB_APP_URL + "?" + searchParams.toString();
+}
+
+function buildPageUrl(page, params = {}) {
+  const url = new URL(page, window.location.href);
+
+  Object.keys(params).forEach(key => {
+    if (params[key] !== undefined && params[key] !== null && params[key] !== "") {
+      url.searchParams.set(key, params[key]);
+    }
+  });
+
+  if (IS_GRIST_MODE) {
+    url.searchParams.set("source", "grist");
+  }
+
+  return url.pathname.split("/").pop() + url.search;
+}
+
+function initSourceMode() {
+  const subtitle = document.querySelector(".subtitle");
+  if (subtitle) {
+    subtitle.textContent = IS_GRIST_MODE
+      ? "Prototype Option B - Mode test Grist en lecture seule"
+      : "Prototype Option B - Mode Google Sheet";
+  }
+
+  const statusInfo = document.querySelector("#status")?.nextElementSibling;
+  if (statusInfo) {
+    statusInfo.textContent = IS_GRIST_MODE
+      ? "Version attendue API : 0.19.0 - Source : Grist lecture seule"
+      : "Version attendue API : 0.19.0 - Source : Google Sheet";
+  }
+
+  const modeBar = document.createElement("div");
+  modeBar.className = IS_GRIST_MODE ? "source-banner source-grist" : "source-banner source-sheet";
+  modeBar.innerHTML = IS_GRIST_MODE
+    ? "Mode actif : <strong>Grist lecture seule</strong>. Les ajouts et modifications sont désactivés dans ce mode test."
+    : "Mode actif : <strong>Google Sheet</strong>. Mode terrain stable avec écriture.";
+
+  const firstCard = document.querySelector("section.card");
+  if (firstCard) {
+    firstCard.insertBefore(modeBar, firstCard.firstChild);
+  }
+
+  const actions = document.querySelector(".actions");
+  if (actions) {
+    const sheetUrl = new URL(window.location.href);
+    sheetUrl.searchParams.delete("source");
+
+    const gristUrl = new URL(window.location.href);
+    gristUrl.searchParams.set("source", "grist");
+
+    actions.insertAdjacentHTML("beforeend", `
+      <a href="${sheetUrl.pathname + sheetUrl.search}"><button type="button" class="btn-secondary">Mode Sheet</button></a>
+      <a href="${gristUrl.pathname + gristUrl.search}"><button type="button" class="btn-secondary">Mode Grist lecture</button></a>
+    `);
+  }
+
+  if (IS_GRIST_MODE) {
+    document.querySelectorAll("#addEquipementForm input, #addEquipementForm select, #addEquipementForm button, #addFamilleForm input, #addFamilleForm button, #addEmplacementForm input, #addEmplacementForm button, #loadAdminReferentielsButton").forEach(element => {
+      element.disabled = true;
+    });
+  }
+}
 
 async function loadReferentiels() {
   await loadFamilles();
@@ -44,7 +131,7 @@ async function loadReferentiels() {
 
 async function loadFamilles() {
   try {
-    const url = WEB_APP_URL + "?action=listFamilles&t=" + Date.now();
+    const url = buildApiUrl(IS_GRIST_MODE ? "listFamillesGrist" : "listFamilles");
 
     const response = await fetch(url, {
       method: "GET",
@@ -73,7 +160,7 @@ async function loadFamilles() {
 
 async function loadEmplacements() {
   try {
-    const url = WEB_APP_URL + "?action=listEmplacements&t=" + Date.now();
+    const url = buildApiUrl(IS_GRIST_MODE ? "listEmplacementsGrist" : "listEmplacements");
 
     const response = await fetch(url, {
       method: "GET",
@@ -148,6 +235,11 @@ function renderEmplacementsSelect() {
 async function addFamille(event) {
   event.preventDefault();
 
+  if (IS_GRIST_MODE) {
+    setStatus("Mode Grist lecture seule : ajout de famille désactivé.", "ko");
+    return;
+  }
+
   setStatus("Ajout de la famille en cours...", "");
 
   try {
@@ -195,6 +287,11 @@ async function addFamille(event) {
 async function addEmplacement(event) {
   event.preventDefault();
 
+  if (IS_GRIST_MODE) {
+    setStatus("Mode Grist lecture seule : ajout d’emplacement désactivé.", "ko");
+    return;
+  }
+
   setStatus("Ajout de l’emplacement en cours...", "");
 
   try {
@@ -241,6 +338,11 @@ async function addEmplacement(event) {
 }
 
 async function loadAdminReferentiels() {
+  if (IS_GRIST_MODE) {
+    setStatus("Mode Grist lecture seule : administration des référentiels désactivée.", "ko");
+    return;
+  }
+
   setStatus("Chargement des référentiels admin en cours...", "");
 
   try {
@@ -483,7 +585,7 @@ function isReferenceActive(value) {
       setStatus("Chargement des équipements en cours...", "");
 
       try {
-        const url = WEB_APP_URL + "?action=listEquipements&t=" + Date.now();
+        const url = buildApiUrl(IS_GRIST_MODE ? "listEquipementsGrist" : "listEquipements");
 
         const response = await fetch(url, {
           method: "GET",
@@ -518,7 +620,7 @@ function isReferenceActive(value) {
       setStatus("Chargement de l’historique en cours...", "");
 
       try {
-        const url = WEB_APP_URL + "?action=listHistorique&t=" + Date.now();
+        const url = buildApiUrl(IS_GRIST_MODE ? "listHistoriqueGrist" : "listHistorique");
 
         const response = await fetch(url, {
           method: "GET",
@@ -559,6 +661,11 @@ function isReferenceActive(value) {
 
     async function addEquipement(event) {
       event.preventDefault();
+
+      if (IS_GRIST_MODE) {
+        setStatus("Mode Grist lecture seule : ajout d’équipement désactivé.", "ko");
+        return;
+      }
 
       setStatus("Ajout de l’équipement en cours...", "");
 
@@ -644,12 +751,12 @@ function isReferenceActive(value) {
             >
           </td>
           <td>
-            <a href="fiche.html?id=${encodeURIComponent(equipement.id || "")}" target="_blank">
+            <a href="${buildPageUrl("fiche.html", { id: equipement.id || "" })}" target="_blank">
               <button type="button" class="btn-secondary">Fiche</button>
             </a>
           </td>
           <td>
-            <a href="qrcodes.html?id=${encodeURIComponent(equipement.id || "")}" target="_blank">
+            <a href="${buildPageUrl("qrcodes.html", { id: equipement.id || "" })}" target="_blank">
               <button type="button" class="btn-secondary">QR</button>
             </a>
           </td>
@@ -702,6 +809,11 @@ function isReferenceActive(value) {
     }
 
     async function saveStatut(id) {
+      if (IS_GRIST_MODE) {
+        setStatus("Mode Grist lecture seule : modification de statut désactivée.", "ko");
+        return;
+      }
+
       setStatus("Enregistrement en cours pour " + id + "...", "");
 
       try {

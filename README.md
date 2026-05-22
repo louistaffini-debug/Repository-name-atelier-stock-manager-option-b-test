@@ -65,3 +65,15 @@ Ajout d'une page `migration-test.html` permettant de générer un aperçu de mig
 ## V0.18c - Migration contrôlée de l’historique vers Grist
 
 Ajout d’un bouton dans `migration-test.html` pour migrer uniquement la table `Historique` depuis Google Sheet vers Grist. Les doublons sont évités via une clé technique basée sur le timestamp, l’ID équipement, le nouveau statut, le nouveau commentaire et la source.
+
+
+## V0.19 - Lecture Grist en mode test
+
+La version V0.19 ajoute un mode de lecture depuis Grist sans remplacer le mode terrain Google Sheet.
+
+- Mode stable : `index.html`
+- Mode test Grist : `index.html?source=grist`
+- Fiche Grist : `fiche.html?id=EQ-001&source=grist`
+- QR Grist : `qrcodes.html?source=grist`
+
+En mode Grist V0.19, l'application est volontairement en lecture seule : les ajouts et modifications restent désactivés.

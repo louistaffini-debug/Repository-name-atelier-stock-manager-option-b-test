@@ -617,3 +617,32 @@ textarea {
   padding: 12px;
   border-radius: 8px;
 }
+
+
+/* V0.19 - Affichage du mode de source de données */
+.source-banner {
+  padding: 12px 14px;
+  border-radius: 10px;
+  margin-bottom: 14px;
+  font-size: 14px;
+}
+
+.source-sheet {
+  background: #e8f4ff;
+  color: #123d5d;
+  border: 1px solid #b9dcf5;
+}
+
+.source-grist {
+  background: #fff4d6;
+  color: #604400;
+  border: 1px solid #f1d48a;
+}
+
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
