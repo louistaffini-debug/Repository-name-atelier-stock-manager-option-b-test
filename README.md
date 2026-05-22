@@ -50,3 +50,13 @@ Actions testées :
 - `gristListHistorique`
 
 La page permet aussi une comparaison indicative des volumes Google Sheet / Grist.
+
+
+## V0.18 - Prévisualisation migration Google Sheet vers Grist
+
+Ajout d'une page `migration-test.html` permettant de générer un aperçu de migration contrôlée sans modifier Grist.
+
+- Comparaison des volumes Google Sheet / Grist.
+- Mapping enrichi des colonnes `Equipements` et `Historique`.
+- Génération des champs `ficheUrl`, `qrUrl`, `action`, `utilisateur` en aperçu.
+- Aucune écriture dans Grist à cette étape.

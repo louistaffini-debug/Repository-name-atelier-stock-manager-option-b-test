@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Migration V0.18 - Atelier Stock Manager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css?v=018">
+</head>
+<body>
+  <header>
+    <h1>Migration V0.18</h1>
+    <p class="subtitle">Aperçu contrôlé Google Sheet → Grist</p>
+  </header>
+
+  <section class="card">
+    <h2>Principe</h2>
+    <p>
+      Cette page lance un aperçu de migration. Elle ne modifie pas Grist.
+      Elle compare les données Google Sheet actuelles avec les tables Grist et affiche le mapping prévu.
+    </p>
+
+    <div class="form-field" style="max-width: 260px; margin-bottom: 16px;">
+      <label for="adminPin">Code admin</label>
+      <input id="adminPin" type="password" placeholder="Code admin requis">
+    </div>
+
+    <div class="actions">
+      <button id="previewButton" type="button">Lancer l’aperçu de migration</button>
+      <a href="index.html"><button type="button" class="btn-secondary">Retour accueil</button></a>
+      <a href="grist-test.html"><button type="button" class="btn-secondary">Test Grist</button></a>
+    </div>
+
+    <p id="status">Statut : en attente</p>
+  </section>
+
+  <section class="card">
+    <h2>Résumé des volumes</h2>
+    <div id="countsSummary">Aucun aperçu lancé.</div>
+  </section>
+
+  <section class="card">
+    <h2>Écarts détectés</h2>
+    <div id="diffsSummary">Aucun aperçu lancé.</div>
+  </section>
+
+  <section class="card">
+    <h2>Colonnes détectées</h2>
+    <div id="columnsSummary">Aucun aperçu lancé.</div>
+  </section>
+
+  <section class="card">
+    <h2>Aperçu des lignes transformées</h2>
+    <div id="samplesSummary">Aucun aperçu lancé.</div>
+  </section>
+
+  <section class="card">
+    <h2>Réponse brute JSON</h2>
+    <pre id="rawJson">Aucune réponse pour le moment.</pre>
+  </section>
+
+  <script src="migration-test.js?v=018"></script>
+</body>
+</html>

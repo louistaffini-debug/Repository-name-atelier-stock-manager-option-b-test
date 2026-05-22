@@ -609,3 +609,11 @@ textarea {
     grid-template-columns: 1fr;
   }
 }
+
+
+.migration-highlight {
+  background: #fff6d6;
+  border-left: 4px solid #c98a00;
+  padding: 12px;
+  border-radius: 8px;
+}
