@@ -131,8 +131,7 @@ function renderColumns(columns) {
 
 function renderColumnGroup(title, data) {
   const content = Object.keys(data || {}).map(table => {
-    return `<h4>${escapeHtml(table)}</h4><pre>${escapeHtml((data[table] || []).join("
-"))}</pre>`;
+    return `<h4>${escapeHtml(table)}</h4><pre>${escapeHtml((data[table] || []).join("\n"))}</pre>`;
   }).join("");
 
   return `<div><h3>${escapeHtml(title)}</h3>${content}</div>`;
