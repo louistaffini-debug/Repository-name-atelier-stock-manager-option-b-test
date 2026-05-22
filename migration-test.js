@@ -50,7 +50,7 @@ async function runMigrationPreview() {
 function renderPreview(preview) {
   renderCounts(preview.counts);
   renderDiffs(preview.diffs);
-  renderColumns(preview.columns);
+  renderColumns(preview.columns, preview.mappingNotes);
   renderSamples(preview.sampleTransformedRows);
 }
 
@@ -107,9 +107,14 @@ function renderDiffs(diffs) {
 }
 
 function renderDiffBlock(diff) {
+  const keyDetails = diff.sheetKey && diff.gristKey && diff.sheetKey !== diff.gristKey
+    ? `<li>Mapping : Google Sheet <strong>${escapeHtml(diff.sheetKey)}</strong> → Grist API <strong>${escapeHtml(diff.gristKey)}</strong></li>`
+    : "";
+
   return `
     <ul>
       <li>Clé : <strong>${escapeHtml(diff.key || "-")}</strong></li>
+      ${keyDetails}
       <li>Présents Sheet : ${diff.sheetCount}</li>
       <li>Présents Grist : ${diff.gristCount}</li>
       <li>Commun par clé : ${diff.identicalCountByKey || 0}</li>
@@ -119,8 +124,19 @@ function renderDiffBlock(diff) {
   `;
 }
 
-function renderColumns(columns) {
-  columnsSummary.innerHTML = `
+function renderColumns(columns, mappingNotes) {
+  const notes = mappingNotes ? `
+    <div class="card" style="box-shadow:none; background:#f8f8f8; margin-bottom:16px;">
+      <h3>Notes de mapping</h3>
+      <ul>
+        <li>${escapeHtml(mappingNotes.Equipements || "")}</li>
+        <li>${escapeHtml(mappingNotes.Historique || "")}</li>
+        <li>${escapeHtml(mappingNotes.decision || "")}</li>
+      </ul>
+    </div>
+  ` : "";
+
+  columnsSummary.innerHTML = notes + `
     <div class="admin-ref-grid">
       ${renderColumnGroup("Google Sheet", columns.sheet)}
       ${renderColumnGroup("Grist actuel", columns.grist)}
