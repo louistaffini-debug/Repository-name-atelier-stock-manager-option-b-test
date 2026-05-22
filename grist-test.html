@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Test Grist V0.17 - Atelier Stock Manager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css?v=017">
+</head>
+
+<body>
+  <header>
+    <h1>Test Grist V0.17</h1>
+    <p class="subtitle">Atelier Stock Manager - test lecture seule Apps Script → Grist</p>
+  </header>
+
+  <section class="card">
+    <h2>Objectif du test</h2>
+    <p>
+      Cette page vérifie que l’application peut lire Grist en parallèle du Google Sheet actuel,
+      sans modifier les données.
+    </p>
+
+    <div class="actions">
+      <a href="index.html"><button type="button" class="btn-secondary">Retour accueil</button></a>
+      <button id="runTestsButton" type="button">Lancer les tests Grist</button>
+      <button id="compareButton" type="button" class="btn-secondary">Comparer Sheet / Grist</button>
+    </div>
+
+    <p id="status">Statut : en attente</p>
+    <p class="small">Aucune écriture n’est effectuée par cette page.</p>
+  </section>
+
+  <section class="card">
+    <h2>Résultats des tests</h2>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Test</th>
+            <th>Résultat</th>
+            <th>Détail</th>
+          </tr>
+        </thead>
+        <tbody id="testsBody">
+          <tr><td colspan="3">Aucun test lancé.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Résumé des données lues</h2>
+    <div class="summary-grid">
+      <div class="summary-box">
+        <strong>Grist équipements</strong>
+        <span id="countGristEquipements">-</span>
+      </div>
+      <div class="summary-box">
+        <strong>Grist familles</strong>
+        <span id="countGristFamilles">-</span>
+      </div>
+      <div class="summary-box">
+        <strong>Grist emplacements</strong>
+        <span id="countGristEmplacements">-</span>
+      </div>
+      <div class="summary-box">
+        <strong>Grist historique</strong>
+        <span id="countGristHistorique">-</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Aperçu Grist - équipements</h2>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Code</th>
+            <th>Nom</th>
+            <th>Famille</th>
+            <th>Emplacement</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody id="gristEquipementsBody">
+          <tr><td colspan="6">Aucune donnée chargée.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Comparaison Google Sheet / Grist</h2>
+    <p class="small">
+      Cette comparaison est indicative : elle compare seulement les nombres de lignes renvoyés par les API.
+    </p>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Table</th>
+            <th>Google Sheet actuel</th>
+            <th>Grist</th>
+            <th>État</th>
+          </tr>
+        </thead>
+        <tbody id="compareBody">
+          <tr><td colspan="4">Comparaison non lancée.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Réponse brute JSON</h2>
+    <pre id="rawJson">Aucune réponse pour le moment.</pre>
+  </section>
+
+  <script src="grist-test.js?v=017"></script>
+</body>
+</html>

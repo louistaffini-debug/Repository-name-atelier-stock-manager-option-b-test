@@ -559,3 +559,53 @@ textarea {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* V0.17 - page test Grist */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.summary-box {
+  background: #f4f4f4;
+  border-radius: 10px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.summary-box span {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.test-ok {
+  background: #d9f7d9;
+  color: #166316;
+}
+
+.test-warn {
+  background: #fff1c2;
+  color: #7a5600;
+}
+
+.test-ko {
+  background: #ffd9d9;
+  color: #8a1f1f;
+}
+
+@media (max-width: 800px) {
+  .summary-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+}

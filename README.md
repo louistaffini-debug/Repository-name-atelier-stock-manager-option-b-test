@@ -35,3 +35,18 @@ Cette version améliore l’usage après scan d’un QR code :
 - conservation du code atelier pour les actions d’écriture.
 
 Le backend Apps Script reste compatible avec les actions existantes. La version API attendue est `0.16.0`.
+
+
+## V0.17 - Test Grist lecture seule
+
+Cette version ajoute une page `grist-test.html` pour vérifier la lecture Grist depuis Apps Script sans modifier les données.
+
+Actions testées :
+
+- `gristHealth`
+- `gristListEquipements`
+- `gristListFamilles`
+- `gristListEmplacements`
+- `gristListHistorique`
+
+La page permet aussi une comparaison indicative des volumes Google Sheet / Grist.
