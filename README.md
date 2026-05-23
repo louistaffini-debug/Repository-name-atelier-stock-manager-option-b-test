@@ -110,3 +110,32 @@ Fonctions validées à tester :
 - alimentation de `actif`, `dateCreation`, `dateModification`, `ficheUrl` et `qrUrl` ;
 - ajout automatique d’une ligne dans `Historique` ;
 - maintien du mode Google Sheet en mode normal.
+
+
+## V0.21 - Sécurisation avant V1.0
+
+Cette version ne modifie pas le fonctionnement GitHub Pages. Elle sécurise le backend Apps Script avant la bascule officielle vers Grist.
+
+Changements principaux :
+
+- la clé API Grist n’est plus stockée en dur dans `Code.gs` ;
+- le code atelier n’est plus stocké en dur dans `Code.gs` ;
+- le code admin n’est plus stocké en dur dans `Code.gs` ;
+- les valeurs sensibles sont lues depuis les Propriétés du script Apps Script ;
+- une action `securityCheck` permet de vérifier que les propriétés sont bien configurées sans afficher les secrets.
+
+Propriétés Apps Script à créer :
+
+```text
+WRITE_PIN
+ADMIN_PIN
+GRIST_BASE_URL
+GRIST_DOC_ID
+GRIST_API_KEY
+```
+
+Test API :
+
+```text
+.../exec?action=securityCheck
+```
