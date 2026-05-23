@@ -36,7 +36,7 @@ function initSourceMode() {
   const subtitle = document.querySelector(".subtitle");
   if (subtitle) {
     subtitle.textContent = IS_GRIST_MODE
-      ? "Atelier Stock Manager - fiche individuelle / Grist test écriture statut V0.20a"
+      ? "Atelier Stock Manager - fiche individuelle / Grist test écriture V0.20c"
       : "Atelier Stock Manager - fiche individuelle / Google Sheet";
   }
 

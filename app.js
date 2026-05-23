@@ -88,14 +88,14 @@ function initSourceMode() {
   const statusInfo = document.querySelector("#status")?.nextElementSibling;
   if (statusInfo) {
     statusInfo.textContent = IS_GRIST_MODE
-      ? "Version attendue API : 0.20.0 - Source : Grist / écriture statut en test V0.20a"
-      : "Version attendue API : 0.20.0 - Source : Google Sheet";
+      ? "Version attendue API : 0.20.2 - Source : Grist / écriture ajout + statut en test V0.20c"
+      : "Version attendue API : 0.20.2 - Source : Google Sheet";
   }
 
   const modeBar = document.createElement("div");
   modeBar.className = IS_GRIST_MODE ? "source-banner source-grist" : "source-banner source-sheet";
   modeBar.innerHTML = IS_GRIST_MODE
-    ? "Mode actif : <strong>Grist test écriture statut</strong>. Ajout et administration désactivés ; modification de statut/commentaire autorisée avec le code atelier."
+    ? "Mode actif : <strong>Grist test écriture équipement</strong>. Ajout équipement et modification statut/commentaire autorisés avec le code atelier ; administration référentiels désactivée."
     : "Mode actif : <strong>Google Sheet</strong>. Mode terrain stable avec écriture.";
 
   const firstCard = document.querySelector("section.card");
@@ -118,7 +118,7 @@ function initSourceMode() {
   }
 
   if (IS_GRIST_MODE) {
-    document.querySelectorAll("#addEquipementForm input, #addEquipementForm select, #addEquipementForm button, #addFamilleForm input, #addFamilleForm button, #addEmplacementForm input, #addEmplacementForm button, #loadAdminReferentielsButton").forEach(element => {
+    document.querySelectorAll("#addFamilleForm input, #addFamilleForm button, #addEmplacementForm input, #addEmplacementForm button, #loadAdminReferentielsButton").forEach(element => {
       element.disabled = true;
     });
   }
@@ -662,12 +662,7 @@ function isReferenceActive(value) {
     async function addEquipement(event) {
       event.preventDefault();
 
-      if (IS_GRIST_MODE) {
-        setStatus("Mode Grist test : ajout d’équipement désactivé.", "ko");
-        return;
-      }
-
-      setStatus("Ajout de l’équipement en cours...", "");
+      setStatus(IS_GRIST_MODE ? "Ajout de l’équipement dans Grist en cours..." : "Ajout de l’équipement en cours...", "");
 
       try {
         const code = document.getElementById("newCode").value.trim();
@@ -677,17 +672,15 @@ function isReferenceActive(value) {
         const statut = document.getElementById("newStatut").value;
         const commentaire = document.getElementById("newCommentaire").value.trim();
 
-        const url =
-          WEB_APP_URL
-          + "?action=addEquipement"
-          + "&code=" + encodeURIComponent(code)
-          + "&nom=" + encodeURIComponent(nom)
-          + "&famille=" + encodeURIComponent(famille)
-          + "&emplacement=" + encodeURIComponent(emplacement)
-          + "&statut=" + encodeURIComponent(statut)
-         + "&commentaire=" + encodeURIComponent(commentaire)
-         + "&pin=" + encodeURIComponent(getWritePin())
-         + "&t=" + Date.now();
+        const url = buildApiUrl(IS_GRIST_MODE ? "addEquipementGrist" : "addEquipement", {
+          code: code,
+          nom: nom,
+          famille: famille,
+          emplacement: emplacement,
+          statut: statut,
+          commentaire: commentaire,
+          pin: getWritePin()
+        });
 
         const response = await fetch(url, {
           method: "GET",
@@ -707,7 +700,7 @@ function isReferenceActive(value) {
           throw new Error(data.error || "Réponse API invalide");
         }
 
-        setStatus("Succès : équipement ajouté.", "ok");
+        setStatus(IS_GRIST_MODE ? "Succès : équipement ajouté dans Grist." : "Succès : équipement ajouté.", "ok");
 
         addEquipementForm.reset();
 

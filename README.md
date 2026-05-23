@@ -97,3 +97,16 @@ En mode Grist :
 - ajout équipement et administration des référentiels toujours désactivés.
 
 Objectif : tester l’écriture Grist sans basculer officiellement l’application.
+
+
+## V0.20c - Écriture Grist en test : ajout équipement
+
+Cette version permet, en mode `?source=grist`, d'ajouter un équipement directement dans Grist avec le code atelier.
+
+Fonctions validées à tester :
+
+- ajout d’un équipement dans la table Grist `Equipements` ;
+- génération automatique de l’identifiant `EQ-xxx` ;
+- alimentation de `actif`, `dateCreation`, `dateModification`, `ficheUrl` et `qrUrl` ;
+- ajout automatique d’une ligne dans `Historique` ;
+- maintien du mode Google Sheet en mode normal.
