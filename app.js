@@ -81,21 +81,21 @@ function initSourceMode() {
   const subtitle = document.querySelector(".subtitle");
   if (subtitle) {
     subtitle.textContent = IS_GRIST_MODE
-      ? "Prototype Option B - Mode test Grist avec écriture limitée"
+      ? "Prototype Option B - Mode test Grist avec écriture référentiels"
       : "Prototype Option B - Mode Google Sheet";
   }
 
   const statusInfo = document.querySelector("#status")?.nextElementSibling;
   if (statusInfo) {
     statusInfo.textContent = IS_GRIST_MODE
-      ? "Version attendue API : 0.20.2 - Source : Grist / écriture ajout + statut en test V0.20c"
-      : "Version attendue API : 0.20.2 - Source : Google Sheet";
+      ? "Version attendue API : 0.20.3 - Source : Grist / écriture équipement + référentiels en test V0.20d"
+      : "Version attendue API : 0.20.3 - Source : Google Sheet";
   }
 
   const modeBar = document.createElement("div");
   modeBar.className = IS_GRIST_MODE ? "source-banner source-grist" : "source-banner source-sheet";
   modeBar.innerHTML = IS_GRIST_MODE
-    ? "Mode actif : <strong>Grist test écriture équipement</strong>. Ajout équipement et modification statut/commentaire autorisés avec le code atelier ; administration référentiels désactivée."
+    ? "Mode actif : <strong>Grist test écriture complète</strong>. Ajout équipement, modification statut/commentaire et administration des référentiels autorisés en test."
     : "Mode actif : <strong>Google Sheet</strong>. Mode terrain stable avec écriture.";
 
   const firstCard = document.querySelector("section.card");
@@ -113,15 +113,10 @@ function initSourceMode() {
 
     actions.insertAdjacentHTML("beforeend", `
       <a href="${sheetUrl.pathname + sheetUrl.search}"><button type="button" class="btn-secondary">Mode Sheet</button></a>
-      <a href="${gristUrl.pathname + gristUrl.search}"><button type="button" class="btn-secondary">Mode Grist lecture</button></a>
+      <a href="${gristUrl.pathname + gristUrl.search}"><button type="button" class="btn-secondary">Mode Grist test</button></a>
     `);
   }
 
-  if (IS_GRIST_MODE) {
-    document.querySelectorAll("#addFamilleForm input, #addFamilleForm button, #addEmplacementForm input, #addEmplacementForm button, #loadAdminReferentielsButton").forEach(element => {
-      element.disabled = true;
-    });
-  }
 }
 
 async function loadReferentiels() {
@@ -235,22 +230,15 @@ function renderEmplacementsSelect() {
 async function addFamille(event) {
   event.preventDefault();
 
-  if (IS_GRIST_MODE) {
-    setStatus("Mode Grist test : ajout de famille désactivé.", "ko");
-    return;
-  }
-
-  setStatus("Ajout de la famille en cours...", "");
+  setStatus(IS_GRIST_MODE ? "Ajout de la famille dans Grist en cours..." : "Ajout de la famille en cours...", "");
 
   try {
     const nomFamille = document.getElementById("newNomFamille").value.trim();
 
-    const url =
-      WEB_APP_URL
-      + "?action=addFamille"
-      + "&nomFamille=" + encodeURIComponent(nomFamille)
-      + "&pin=" + encodeURIComponent(getAdminPin())
-      + "&t=" + Date.now();
+    const url = buildApiUrl(IS_GRIST_MODE ? "addFamilleGrist" : "addFamille", {
+      nomFamille: nomFamille,
+      pin: getAdminPin()
+    });
 
     const response = await fetch(url, {
       method: "GET",
@@ -270,7 +258,7 @@ async function addFamille(event) {
       throw new Error(data.error || "Réponse API invalide");
     }
 
-    setStatus("Succès : famille ajoutée.", "ok");
+    setStatus(IS_GRIST_MODE ? "Succès : famille ajoutée dans Grist." : "Succès : famille ajoutée.", "ok");
 
     addFamilleForm.reset();
     await loadFamilles();
@@ -287,24 +275,17 @@ async function addFamille(event) {
 async function addEmplacement(event) {
   event.preventDefault();
 
-  if (IS_GRIST_MODE) {
-    setStatus("Mode Grist test : ajout d’emplacement désactivé.", "ko");
-    return;
-  }
-
-  setStatus("Ajout de l’emplacement en cours...", "");
+  setStatus(IS_GRIST_MODE ? "Ajout de l’emplacement dans Grist en cours..." : "Ajout de l’emplacement en cours...", "");
 
   try {
     const nomEmplacement = document.getElementById("newNomEmplacement").value.trim();
     const description = document.getElementById("newDescriptionEmplacement").value.trim();
 
-    const url =
-      WEB_APP_URL
-      + "?action=addEmplacement"
-      + "&nomEmplacement=" + encodeURIComponent(nomEmplacement)
-      + "&description=" + encodeURIComponent(description)
-      + "&pin=" + encodeURIComponent(getAdminPin())
-      + "&t=" + Date.now();
+    const url = buildApiUrl(IS_GRIST_MODE ? "addEmplacementGrist" : "addEmplacement", {
+      nomEmplacement: nomEmplacement,
+      description: description,
+      pin: getAdminPin()
+    });
 
     const response = await fetch(url, {
       method: "GET",
@@ -324,7 +305,7 @@ async function addEmplacement(event) {
       throw new Error(data.error || "Réponse API invalide");
     }
 
-    setStatus("Succès : emplacement ajouté.", "ok");
+    setStatus(IS_GRIST_MODE ? "Succès : emplacement ajouté dans Grist." : "Succès : emplacement ajouté.", "ok");
 
     addEmplacementForm.reset();
     await loadEmplacements();
@@ -338,12 +319,7 @@ async function addEmplacement(event) {
 }
 
 async function loadAdminReferentiels() {
-  if (IS_GRIST_MODE) {
-    setStatus("Mode Grist test : administration des référentiels désactivée.", "ko");
-    return;
-  }
-
-  setStatus("Chargement des référentiels admin en cours...", "");
+  setStatus(IS_GRIST_MODE ? "Chargement des référentiels admin Grist en cours..." : "Chargement des référentiels admin en cours...", "");
 
   try {
     await loadAdminFamilles();
@@ -359,11 +335,9 @@ async function loadAdminReferentiels() {
 }
 
 async function loadAdminFamilles() {
-  const url =
-    WEB_APP_URL
-    + "?action=listFamillesAdmin"
-    + "&pin=" + encodeURIComponent(getAdminPin())
-    + "&t=" + Date.now();
+  const url = buildApiUrl(IS_GRIST_MODE ? "listFamillesAdminGrist" : "listFamillesAdmin", {
+    pin: getAdminPin()
+  });
 
   const response = await fetch(url, {
     method: "GET",
@@ -387,11 +361,9 @@ async function loadAdminFamilles() {
 }
 
 async function loadAdminEmplacements() {
-  const url =
-    WEB_APP_URL
-    + "?action=listEmplacementsAdmin"
-    + "&pin=" + encodeURIComponent(getAdminPin())
-    + "&t=" + Date.now();
+  const url = buildApiUrl(IS_GRIST_MODE ? "listEmplacementsAdminGrist" : "listEmplacementsAdmin", {
+    pin: getAdminPin()
+  });
 
   const response = await fetch(url, {
     method: "GET",
@@ -491,13 +463,11 @@ async function setFamilleActive(idFamille, actif) {
   setStatus("Mise à jour de la famille " + idFamille + "...", "");
 
   try {
-    const url =
-      WEB_APP_URL
-      + "?action=setFamilleActive"
-      + "&idFamille=" + encodeURIComponent(idFamille)
-      + "&actif=" + encodeURIComponent(actif ? "true" : "false")
-      + "&pin=" + encodeURIComponent(getAdminPin())
-      + "&t=" + Date.now();
+    const url = buildApiUrl(IS_GRIST_MODE ? "setFamilleActiveGrist" : "setFamilleActive", {
+      idFamille: idFamille,
+      actif: actif ? "true" : "false",
+      pin: getAdminPin()
+    });
 
     const response = await fetch(url, {
       method: "GET",
@@ -517,7 +487,7 @@ async function setFamilleActive(idFamille, actif) {
       throw new Error(data.error || "Réponse API invalide");
     }
 
-    setStatus("Succès : famille mise à jour.", "ok");
+    setStatus(IS_GRIST_MODE ? "Succès : famille Grist mise à jour." : "Succès : famille mise à jour.", "ok");
 
     await loadFamilles();
     await loadAdminFamilles();
@@ -533,13 +503,11 @@ async function setEmplacementActive(idEmplacement, actif) {
   setStatus("Mise à jour de l’emplacement " + idEmplacement + "...", "");
 
   try {
-    const url =
-      WEB_APP_URL
-      + "?action=setEmplacementActive"
-      + "&idEmplacement=" + encodeURIComponent(idEmplacement)
-      + "&actif=" + encodeURIComponent(actif ? "true" : "false")
-      + "&pin=" + encodeURIComponent(getAdminPin())
-      + "&t=" + Date.now();
+    const url = buildApiUrl(IS_GRIST_MODE ? "setEmplacementActiveGrist" : "setEmplacementActive", {
+      idEmplacement: idEmplacement,
+      actif: actif ? "true" : "false",
+      pin: getAdminPin()
+    });
 
     const response = await fetch(url, {
       method: "GET",
@@ -559,7 +527,7 @@ async function setEmplacementActive(idEmplacement, actif) {
       throw new Error(data.error || "Réponse API invalide");
     }
 
-    setStatus("Succès : emplacement mis à jour.", "ok");
+    setStatus(IS_GRIST_MODE ? "Succès : emplacement Grist mis à jour." : "Succès : emplacement mis à jour.", "ok");
 
     await loadEmplacements();
     await loadAdminEmplacements();
