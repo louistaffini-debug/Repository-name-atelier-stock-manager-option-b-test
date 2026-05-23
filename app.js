@@ -81,21 +81,21 @@ function initSourceMode() {
   const subtitle = document.querySelector(".subtitle");
   if (subtitle) {
     subtitle.textContent = IS_GRIST_MODE
-      ? "Prototype Option B - Mode test Grist en lecture seule"
+      ? "Prototype Option B - Mode test Grist avec écriture limitée"
       : "Prototype Option B - Mode Google Sheet";
   }
 
   const statusInfo = document.querySelector("#status")?.nextElementSibling;
   if (statusInfo) {
     statusInfo.textContent = IS_GRIST_MODE
-      ? "Version attendue API : 0.19.0 - Source : Grist lecture seule / correctif frontend 0.19b"
-      : "Version attendue API : 0.19.0 - Source : Google Sheet / correctif frontend 0.19b";
+      ? "Version attendue API : 0.20.0 - Source : Grist / écriture statut en test V0.20a"
+      : "Version attendue API : 0.20.0 - Source : Google Sheet";
   }
 
   const modeBar = document.createElement("div");
   modeBar.className = IS_GRIST_MODE ? "source-banner source-grist" : "source-banner source-sheet";
   modeBar.innerHTML = IS_GRIST_MODE
-    ? "Mode actif : <strong>Grist lecture seule</strong>. Les ajouts et modifications sont désactivés dans ce mode test."
+    ? "Mode actif : <strong>Grist test écriture statut</strong>. Ajout et administration désactivés ; modification de statut/commentaire autorisée avec le code atelier."
     : "Mode actif : <strong>Google Sheet</strong>. Mode terrain stable avec écriture.";
 
   const firstCard = document.querySelector("section.card");
@@ -236,7 +236,7 @@ async function addFamille(event) {
   event.preventDefault();
 
   if (IS_GRIST_MODE) {
-    setStatus("Mode Grist lecture seule : ajout de famille désactivé.", "ko");
+    setStatus("Mode Grist test : ajout de famille désactivé.", "ko");
     return;
   }
 
@@ -288,7 +288,7 @@ async function addEmplacement(event) {
   event.preventDefault();
 
   if (IS_GRIST_MODE) {
-    setStatus("Mode Grist lecture seule : ajout d’emplacement désactivé.", "ko");
+    setStatus("Mode Grist test : ajout d’emplacement désactivé.", "ko");
     return;
   }
 
@@ -339,7 +339,7 @@ async function addEmplacement(event) {
 
 async function loadAdminReferentiels() {
   if (IS_GRIST_MODE) {
-    setStatus("Mode Grist lecture seule : administration des référentiels désactivée.", "ko");
+    setStatus("Mode Grist test : administration des référentiels désactivée.", "ko");
     return;
   }
 
@@ -663,7 +663,7 @@ function isReferenceActive(value) {
       event.preventDefault();
 
       if (IS_GRIST_MODE) {
-        setStatus("Mode Grist lecture seule : ajout d’équipement désactivé.", "ko");
+        setStatus("Mode Grist test : ajout d’équipement désactivé.", "ko");
         return;
       }
 
@@ -742,13 +742,12 @@ function isReferenceActive(value) {
           <td>${escapeHtml(equipement.famille)}</td>
           <td>${escapeHtml(equipement.emplacement)}</td>
           <td>${renderStatut(statut)}</td>
-          <td>${renderStatutSelect(id, statut, IS_GRIST_MODE)}</td>
+          <td>${renderStatutSelect(id, statut, false)}</td>
           <td>
             <input
               id="commentaire-${id}"
               type="text"
               value="${escapeHtml(commentaire)}"
-              ${IS_GRIST_MODE ? "disabled" : ""}
             >
           </td>
           <td>
@@ -762,7 +761,7 @@ function isReferenceActive(value) {
             </a>
           </td>
           <td>
-            <button onclick="saveStatut('${id}')" ${IS_GRIST_MODE ? "disabled" : ""}>${IS_GRIST_MODE ? "Lecture seule" : "Enregistrer"}</button>
+            <button onclick="saveStatut('${id}')">${IS_GRIST_MODE ? "Enregistrer Grist" : "Enregistrer"}</button>
           </td>
         `;
 
@@ -810,25 +809,18 @@ function isReferenceActive(value) {
     }
 
     async function saveStatut(id) {
-      if (IS_GRIST_MODE) {
-        setStatus("Mode Grist lecture seule : modification de statut désactivée.", "ko");
-        return;
-      }
-
-      setStatus("Enregistrement en cours pour " + id + "...", "");
+      setStatus((IS_GRIST_MODE ? "Enregistrement Grist en cours pour " : "Enregistrement en cours pour ") + id + "...", "");
 
       try {
         const statut = document.getElementById("statut-" + id).value;
         const commentaire = document.getElementById("commentaire-" + id).value;
 
-        const url =
-          WEB_APP_URL
-          + "?action=updateStatut"
-          + "&id=" + encodeURIComponent(id)
-          + "&statut=" + encodeURIComponent(statut)
-          + "&commentaire=" + encodeURIComponent(commentaire)
-          + "&pin=" + encodeURIComponent(getWritePin())
-          + "&t=" + Date.now();
+        const url = buildApiUrl(IS_GRIST_MODE ? "updateStatutGrist" : "updateStatut", {
+          id: id,
+          statut: statut,
+          commentaire: commentaire,
+          pin: getWritePin()
+        });
 
         const response = await fetch(url, {
           method: "GET",

@@ -36,7 +36,7 @@ function initSourceMode() {
   const subtitle = document.querySelector(".subtitle");
   if (subtitle) {
     subtitle.textContent = IS_GRIST_MODE
-      ? "Atelier Stock Manager - fiche individuelle / Grist lecture seule / correctif 0.19b"
+      ? "Atelier Stock Manager - fiche individuelle / Grist test écriture statut V0.20a"
       : "Atelier Stock Manager - fiche individuelle / Google Sheet";
   }
 
@@ -45,16 +45,11 @@ function initSourceMode() {
     const modeBar = document.createElement("div");
     modeBar.className = IS_GRIST_MODE ? "source-banner source-grist" : "source-banner source-sheet";
     modeBar.innerHTML = IS_GRIST_MODE
-      ? "Mode actif : <strong>Grist lecture seule</strong>. Les modifications sont désactivées dans ce mode test."
+      ? "Mode actif : <strong>Grist test écriture statut</strong>. La modification du statut/commentaire est autorisée avec le code atelier."
       : "Mode actif : <strong>Google Sheet</strong>. Modification terrain active.";
     firstCard.insertBefore(modeBar, firstCard.firstChild);
   }
 
-  if (IS_GRIST_MODE) {
-    document.getElementById("writePin").disabled = true;
-    document.getElementById("quickCommentaire").disabled = true;
-    saveQuickStatusButton.disabled = true;
-  }
 }
 
 function buildPageUrl(page, params = {}) {
@@ -167,11 +162,6 @@ async function loadHistoriqueEquipement(id) {
 }
 
 async function saveQuickStatus() {
-  if (IS_GRIST_MODE) {
-    setStatus("Mode Grist lecture seule : modification de statut désactivée.", "ko");
-    return;
-  }
-
   if (!currentEquipement || !currentEquipement.id) {
     setStatus("Échec : aucun équipement chargé.", "ko");
     return;
@@ -188,9 +178,10 @@ async function saveQuickStatus() {
   setStatus("Enregistrement rapide en cours...", "");
 
   try {
+    const action = IS_GRIST_MODE ? "updateStatutGrist" : "updateStatut";
     const url =
       WEB_APP_URL
-      + "?action=updateStatut"
+      + "?action=" + encodeURIComponent(action)
       + "&id=" + encodeURIComponent(currentEquipement.id)
       + "&statut=" + encodeURIComponent(selectedStatut)
       + "&commentaire=" + encodeURIComponent(commentaire)

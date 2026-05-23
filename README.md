@@ -84,3 +84,16 @@ En mode Grist V0.19, l'application est volontairement en lecture seule : les ajo
 - Correction de l’affichage des dates Grist : timestamp Unix en secondes converti en date/heure JavaScript.
 - Désactivation visuelle des contrôles d’écriture dans le tableau général en mode `?source=grist`.
 - Aucun changement backend : Apps Script reste en version 0.19.0.
+
+
+## V0.20a - Écriture Grist en test : statut/commentaire
+
+Cette version conserve le mode Google Sheet historique et ajoute une écriture limitée en mode `?source=grist`.
+
+En mode Grist :
+- modification du statut autorisée avec le code atelier ;
+- modification du commentaire autorisée avec le code atelier ;
+- écriture automatique d’une ligne dans l’historique Grist ;
+- ajout équipement et administration des référentiels toujours désactivés.
+
+Objectif : tester l’écriture Grist sans basculer officiellement l’application.
