@@ -1,6 +1,8 @@
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzOy3GzEra_cO88DLC9bbqwwgUKXjJFZuIPI9rMXwWl1Q63zNaZmt4v3fR2vEppHX7BYg/exec";
 const EXPECTED_REPOSITORY_PATH = "/atelier-stock-manager/";
-const MIN_API_VERSION = "0.16.0";
+const MIN_API_VERSION = "1.0.0";
+const DATA_SOURCE = getQueryParam("source") === "sheet" ? "sheet" : "grist";
+const IS_GRIST_MODE = DATA_SOURCE === "grist";
 
 const statusElement = document.getElementById("status");
 const diagnosticBody = document.getElementById("diagnosticBody");
@@ -26,6 +28,7 @@ async function runDiagnostic() {
   try {
     addResult("URL GitHub Pages", window.location.pathname.includes(EXPECTED_REPOSITORY_PATH),
       "Chemin détecté : " + window.location.pathname);
+    addResult("Source de données", true, IS_GRIST_MODE ? "Grist officiel" : "Google Sheet secours");
 
     const health = await callApi("health");
     addResult("API health", health.ok === true, "Version API : " + (health.version || "inconnue"));
@@ -91,8 +94,9 @@ async function runDiagnostic() {
 }
 
 async function callApi(action, params = {}) {
+  const effectiveAction = getEffectiveAction(action);
   const url = new URL(WEB_APP_URL);
-  url.searchParams.set("action", action);
+  url.searchParams.set("action", effectiveAction);
   url.searchParams.set("t", Date.now());
 
   Object.keys(params).forEach(key => {
@@ -106,12 +110,29 @@ async function callApi(action, params = {}) {
   });
 
   if (!response.ok) {
-    throw new Error("Erreur HTTP " + action + " : " + response.status + " " + response.statusText);
+    throw new Error("Erreur HTTP " + effectiveAction + " : " + response.status + " " + response.statusText);
   }
 
   const data = await response.json();
   rawJson.textContent = JSON.stringify(data, null, 2);
   return data;
+}
+
+function getEffectiveAction(action) {
+  if (!IS_GRIST_MODE) {
+    return action;
+  }
+
+  const gristActions = {
+    listEquipements: "listEquipementsGrist",
+    listFamilles: "listFamillesGrist",
+    listEmplacements: "listEmplacementsGrist",
+    listHistorique: "listHistoriqueGrist",
+    getEquipement: "getEquipementGrist",
+    listHistoriqueEquipement: "listHistoriqueEquipementGrist"
+  };
+
+  return gristActions[action] || action;
 }
 
 function addResult(name, ok, detail) {
@@ -160,6 +181,12 @@ function renderSummary() {
 }
 
 function renderDetectedLinks() {
+  if (DATA_SOURCE === "sheet") {
+    document.querySelectorAll('a[href="index.html"]').forEach(link => {
+      link.setAttribute("href", "index.html?source=sheet");
+    });
+  }
+
   const currentUrl = window.location.href;
   const homeUrl = buildUrl("index.html");
   const qrUrl = buildUrl("qrcodes.html");
@@ -176,6 +203,12 @@ function buildUrl(page, params = {}) {
   Object.keys(params).forEach(key => {
     url.searchParams.set(key, params[key]);
   });
+
+  if (DATA_SOURCE === "sheet") {
+    url.searchParams.set("source", "sheet");
+  } else {
+    url.searchParams.delete("source");
+  }
 
   return url.href;
 }

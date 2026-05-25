@@ -1,6 +1,6 @@
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzOy3GzEra_cO88DLC9bbqwwgUKXjJFZuIPI9rMXwWl1Q63zNaZmt4v3fR2vEppHX7BYg/exec";
 
-const DATA_SOURCE = getQueryParam("source") === "grist" ? "grist" : "sheet";
+const DATA_SOURCE = getQueryParam("source") === "sheet" ? "sheet" : "grist";
 const IS_GRIST_MODE = DATA_SOURCE === "grist";
 
 const STATUTS = [
@@ -36,8 +36,8 @@ function initSourceMode() {
   const subtitle = document.querySelector(".subtitle");
   if (subtitle) {
     subtitle.textContent = IS_GRIST_MODE
-      ? "Atelier Stock Manager - fiche individuelle / Grist test écriture V0.20c"
-      : "Atelier Stock Manager - fiche individuelle / Google Sheet";
+      ? "Atelier Stock Manager - fiche individuelle / Grist officiel"
+      : "Atelier Stock Manager - fiche individuelle / Google Sheet secours";
   }
 
   const firstCard = document.querySelector("section.card");
@@ -45,11 +45,22 @@ function initSourceMode() {
     const modeBar = document.createElement("div");
     modeBar.className = IS_GRIST_MODE ? "source-banner source-grist" : "source-banner source-sheet";
     modeBar.innerHTML = IS_GRIST_MODE
-      ? "Mode actif : <strong>Grist test écriture statut</strong>. La modification du statut/commentaire est autorisée avec le code atelier."
-      : "Mode actif : <strong>Google Sheet</strong>. Modification terrain active.";
+      ? "Mode actif : <strong>Grist officiel</strong>. La modification du statut/commentaire est autorisée avec le code atelier."
+      : "Mode secours : <strong>Google Sheet</strong>. À utiliser uniquement en repli temporaire.";
     firstCard.insertBefore(modeBar, firstCard.firstChild);
   }
 
+  updateInternalLinksForSource();
+}
+
+function updateInternalLinksForSource() {
+  if (DATA_SOURCE !== "sheet") {
+    return;
+  }
+
+  document.querySelectorAll('a[href="index.html"]').forEach(link => {
+    link.setAttribute("href", "index.html?source=sheet");
+  });
 }
 
 function buildPageUrl(page, params = {}) {
@@ -61,8 +72,8 @@ function buildPageUrl(page, params = {}) {
     }
   });
 
-  if (IS_GRIST_MODE) {
-    url.searchParams.set("source", "grist");
+  if (DATA_SOURCE === "sheet") {
+    url.searchParams.set("source", "sheet");
   }
 
   return url.pathname.split("/").pop() + url.search;

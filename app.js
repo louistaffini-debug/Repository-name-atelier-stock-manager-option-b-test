@@ -44,7 +44,7 @@
 
 function getDataSource() {
   const params = new URLSearchParams(window.location.search);
-  return params.get("source") === "grist" ? "grist" : "sheet";
+  return params.get("source") === "sheet" ? "sheet" : "grist";
 }
 
 function buildApiUrl(action, params = {}) {
@@ -70,8 +70,8 @@ function buildPageUrl(page, params = {}) {
     }
   });
 
-  if (IS_GRIST_MODE) {
-    url.searchParams.set("source", "grist");
+  if (DATA_SOURCE === "sheet") {
+    url.searchParams.set("source", "sheet");
   }
 
   return url.pathname.split("/").pop() + url.search;
@@ -81,22 +81,22 @@ function initSourceMode() {
   const subtitle = document.querySelector(".subtitle");
   if (subtitle) {
     subtitle.textContent = IS_GRIST_MODE
-      ? "Prototype Option B - Mode test Grist avec écriture référentiels"
-      : "Prototype Option B - Mode Google Sheet";
+      ? "Atelier Stock Manager - Mode Grist officiel"
+      : "Atelier Stock Manager - Mode secours Google Sheet";
   }
 
   const statusInfo = document.querySelector("#status")?.nextElementSibling;
   if (statusInfo) {
     statusInfo.textContent = IS_GRIST_MODE
-      ? "Version attendue API : 0.20.3 - Source : Grist / écriture équipement + référentiels en test V0.20d"
-      : "Version attendue API : 0.20.3 - Source : Google Sheet";
+      ? "Version attendue API : 1.0.0 - Source : Grist officiel"
+      : "Version attendue API : 1.0.0 - Source : Google Sheet secours";
   }
 
   const modeBar = document.createElement("div");
   modeBar.className = IS_GRIST_MODE ? "source-banner source-grist" : "source-banner source-sheet";
   modeBar.innerHTML = IS_GRIST_MODE
-    ? "Mode actif : <strong>Grist test écriture complète</strong>. Ajout équipement, modification statut/commentaire et administration des référentiels autorisés en test."
-    : "Mode actif : <strong>Google Sheet</strong>. Mode terrain stable avec écriture.";
+    ? "Mode actif : <strong>Grist officiel</strong>. Base principale de l’application atelier."
+    : "Mode secours : <strong>Google Sheet</strong>. À utiliser uniquement en repli temporaire.";
 
   const firstCard = document.querySelector("section.card");
   if (firstCard) {
@@ -105,18 +105,31 @@ function initSourceMode() {
 
   const actions = document.querySelector(".actions");
   if (actions) {
-    const sheetUrl = new URL(window.location.href);
-    sheetUrl.searchParams.delete("source");
-
     const gristUrl = new URL(window.location.href);
-    gristUrl.searchParams.set("source", "grist");
+    gristUrl.searchParams.delete("source");
+
+    const sheetUrl = new URL(window.location.href);
+    sheetUrl.searchParams.set("source", "sheet");
 
     actions.insertAdjacentHTML("beforeend", `
-      <a href="${sheetUrl.pathname + sheetUrl.search}"><button type="button" class="btn-secondary">Mode Sheet</button></a>
-      <a href="${gristUrl.pathname + gristUrl.search}"><button type="button" class="btn-secondary">Mode Grist test</button></a>
+      <a href="${gristUrl.pathname + gristUrl.search}"><button type="button" class="btn-secondary">Mode Grist officiel</button></a>
+      <a href="${sheetUrl.pathname + sheetUrl.search}"><button type="button" class="btn-secondary">Mode Sheet secours</button></a>
     `);
   }
 
+  updateInternalLinksForSource();
+}
+
+function updateInternalLinksForSource() {
+  if (DATA_SOURCE !== "sheet") {
+    return;
+  }
+
+  document.querySelectorAll('a[href="qrcodes.html"], a[href="diagnostic.html"]').forEach(link => {
+    const url = new URL(link.getAttribute("href"), window.location.href);
+    url.searchParams.set("source", "sheet");
+    link.setAttribute("href", url.pathname.split("/").pop() + url.search);
+  });
 }
 
 async function loadReferentiels() {

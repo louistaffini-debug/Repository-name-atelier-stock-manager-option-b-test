@@ -1,6 +1,6 @@
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzOy3GzEra_cO88DLC9bbqwwgUKXjJFZuIPI9rMXwWl1Q63zNaZmt4v3fR2vEppHX7BYg/exec";
 
-const DATA_SOURCE = getQueryParam("source") === "grist" ? "grist" : "sheet";
+const DATA_SOURCE = getQueryParam("source") === "sheet" ? "sheet" : "grist";
 const IS_GRIST_MODE = DATA_SOURCE === "grist";
 
 const statusElement = document.getElementById("status");
@@ -21,8 +21,8 @@ function initSourceMode() {
   const subtitle = document.querySelector(".subtitle");
   if (subtitle) {
     subtitle.textContent = IS_GRIST_MODE
-      ? "Atelier Stock Manager - QR codes / Grist lecture seule"
-      : "Atelier Stock Manager - QR codes / Google Sheet";
+      ? "Atelier Stock Manager - QR codes / Grist officiel"
+      : "Atelier Stock Manager - QR codes / Google Sheet secours";
   }
 
   const firstCard = document.querySelector("section.card");
@@ -30,10 +30,22 @@ function initSourceMode() {
     const modeBar = document.createElement("div");
     modeBar.className = IS_GRIST_MODE ? "source-banner source-grist" : "source-banner source-sheet";
     modeBar.innerHTML = IS_GRIST_MODE
-      ? "Mode actif : <strong>Grist lecture seule</strong>. Les QR codes générés pointent vers des fiches en mode Grist."
-      : "Mode actif : <strong>Google Sheet</strong>. QR codes terrain actuels.";
+      ? "Mode actif : <strong>Grist officiel</strong>. Les QR codes générés pointent vers les fiches Grist par défaut."
+      : "Mode secours : <strong>Google Sheet</strong>. QR codes de repli temporaire.";
     firstCard.insertBefore(modeBar, firstCard.firstChild);
   }
+
+  updateInternalLinksForSource();
+}
+
+function updateInternalLinksForSource() {
+  if (DATA_SOURCE !== "sheet") {
+    return;
+  }
+
+  document.querySelectorAll('a[href="index.html"]').forEach(link => {
+    link.setAttribute("href", "index.html?source=sheet");
+  });
 }
 
 async function loadQrCodes() {
@@ -130,8 +142,8 @@ function createQrCode(container, text) {
 function buildFicheUrl(id) {
   const url = new URL("fiche.html", window.location.href);
   url.searchParams.set("id", id || "");
-  if (IS_GRIST_MODE) {
-    url.searchParams.set("source", "grist");
+  if (DATA_SOURCE === "sheet") {
+    url.searchParams.set("source", "sheet");
   }
   return url.href;
 }
