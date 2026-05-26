@@ -2,235 +2,264 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <title>Atelier Stock Manager - V1.0 Grist</title>
+  <title>Atelier Stock Manager - V1.1 Hybride</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <link rel="stylesheet" href="style.css?v=100">
+  <link rel="stylesheet" href="style.css?v=110">
 </head>
 
-<body>
-  <header>
-    <h1>Atelier Stock Manager</h1>
-    <p class="subtitle">Atelier Stock Manager - V1.0 - Grist officiel</p>
-  </header>
-
-  <section class="card">
-    <h2>Connexion API</h2>
-    <p>
-      Cette version utilise Grist comme base officielle. Elle permet de charger les équipements, d’ajouter un équipement, de modifier leur statut et d’afficher l’historique des changements.
-    </p>
-
-    <div class="actions">
-      <button id="loadButton">Charger les équipements</button>
-      <button id="historyButton">Charger l’historique</button>
-      <button id="refreshAllButton">Tout recharger</button>
-      <a href="qrcodes.html" target="_blank"><button type="button" class="btn-secondary">Page QR codes</button></a>
-      <a href="diagnostic.html" target="_blank"><button type="button" class="btn-secondary">Diagnostic V1.0</button></a>
+<body class="app-shell">
+  <aside class="sidebar no-print">
+    <div class="brand-block">
+      <div class="brand-icon">ASM</div>
+      <div>
+        <strong>Atelier Stock</strong>
+        <span>Manager</span>
+      </div>
     </div>
 
-    <div class="form-field" style="max-width: 260px; margin-top: 12px;">
-      <label for="writePin">Code atelier</label>
-      <input id="writePin" type="password" placeholder="Code requis pour ajouter/modifier">
+    <nav class="side-nav">
+      <a href="#atelierBoard" class="active">Atelier</a>
+      <a href="#equipementsSection">Équipements</a>
+      <a href="#historiqueSection">Historique</a>
+      <a href="#adminSection">Administration</a>
+      <a href="qrcodes.html">QR codes</a>
+      <a href="diagnostic.html">Diagnostic</a>
+    </nav>
+
+    <div class="sidebar-card">
+      <span class="eyebrow">Module hybride</span>
+      <strong>Atelier + Magasin</strong>
+      <p>La partie atelier est opérationnelle. La partie magasin est préparée visuellement pour une prochaine évolution.</p>
     </div>
+  </aside>
 
-    <p id="status">Statut : en attente</p>
-    <p class="small">Version attendue API : 1.0.0 - Grist par défaut</p>
-  </section>
+  <main class="main-content">
+    <header class="topbar no-print">
+      <div>
+        <p class="eyebrow">V1.1 - refonte visuelle</p>
+        <h1>Atelier Stock Manager</h1>
+        <p class="subtitle">Interface hybride atelier / magasin - Grist officiel</p>
+      </div>
+      <div class="topbar-actions actions">
+        <button id="loadButton">Charger les équipements</button>
+        <button id="historyButton" class="btn-secondary">Historique</button>
+        <button id="refreshAllButton" class="btn-primary">Tout charger</button>
+        <a href="qrcodes.html" target="_blank"><button type="button" class="btn-secondary">QR codes</button></a>
+        <a href="diagnostic.html" target="_blank"><button type="button" class="btn-secondary">Diagnostic</button></a>
+      </div>
+    </header>
 
- <section class="card">
-  <h2>Ajouter un équipement</h2>
+    <section class="hero-board" id="atelierBoard">
+      <div class="hero-copy">
+        <span class="eyebrow">Base officielle</span>
+        <h2>Gestion atelier mécanique</h2>
+        <p>Vue moderne inspirée d’un tableau métier : cartes visuelles, tableau dense, fiches QR et administration des référentiels.</p>
+        <div class="mode-slot"></div>
+      </div>
+      <div class="pin-panel">
+        <div class="form-field compact-field">
+          <label for="writePin">Code atelier</label>
+          <input id="writePin" type="password" placeholder="Code requis pour ajouter/modifier">
+        </div>
+        <p id="status">Statut : en attente</p>
+        <p class="small">Version attendue API : 1.0.0 - Grist par défaut</p>
+      </div>
+    </section>
 
-  <form id="addEquipementForm">
-    <div class="form-grid">
-      <div class="form-field">
-        <label for="newCode">Code équipement</label>
-        <input id="newCode" type="text" placeholder="Ex : FRAIS-VF2-01" required>
+    <section class="dashboard-grid" aria-label="Indicateurs atelier">
+      <article class="metric-card"><span>Total équipements</span><strong id="metricTotal">0</strong><small>Base active</small></article>
+      <article class="metric-card success"><span>Disponibles</span><strong id="metricDisponible">0</strong><small>Prêts à l’emploi</small></article>
+      <article class="metric-card warning"><span>Utilisés</span><strong id="metricUtilise">0</strong><small>En cours</small></article>
+      <article class="metric-card danger"><span>Maintenance</span><strong id="metricMaintenance">0</strong><small>À surveiller</small></article>
+      <article class="metric-card neutral"><span>Hors service</span><strong id="metricHorsService">0</strong><small>Indisponibles</small></article>
+    </section>
+
+    <section class="module-switch no-print">
+      <button class="module-tab active" data-board="atelier">Atelier équipements</button>
+      <button class="module-tab" data-board="magasin">Magasin composants</button>
+      <button class="module-tab" data-board="hybride">Vue hybride</button>
+    </section>
+
+    <section class="card board-panel" id="magasinPreview" hidden>
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Préparation</p>
+          <h2>Magasin composants</h2>
+        </div>
+        <span class="pill ghost">Module à connecter</span>
+      </div>
+      <div class="magasin-grid">
+        <article class="stock-card preview-card"><div class="stock-image">CO</div><h3>Composants</h3><p>Quantités, seuil mini, fournisseur, QR code.</p></article>
+        <article class="stock-card preview-card"><div class="stock-image">PR</div><h3>Profilés</h3><p>Bibliothèque d’éléments longs et références.</p></article>
+        <article class="stock-card preview-card"><div class="stock-image">OU</div><h3>Outillage</h3><p>Stock, casiers, consommables, commandes.</p></article>
+      </div>
+      <p class="small">Cette zone prépare l’option hybride sans modifier les données actuelles. La V1.1 garde Grist atelier comme base principale.</p>
+    </section>
+
+    <section class="card compact-card no-print">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Actions rapides</p>
+          <h2>Ajouter un équipement</h2>
+        </div>
+        <span class="pill">Grist officiel</span>
       </div>
 
-      <div class="form-field">
-        <label for="newNom">Nom</label>
-        <input id="newNom" type="text" placeholder="Ex : Centre d’usinage Haas VF2" required>
+      <form id="addEquipementForm">
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="newCode">Code équipement</label>
+            <input id="newCode" type="text" placeholder="Ex : FRAIS-VF2-01" required>
+          </div>
+          <div class="form-field">
+            <label for="newNom">Nom</label>
+            <input id="newNom" type="text" placeholder="Ex : Centre d’usinage Haas VF2" required>
+          </div>
+          <div class="form-field">
+            <label for="newFamille">Famille</label>
+            <select id="newFamille" required><option value="">Chargement...</option></select>
+          </div>
+          <div class="form-field">
+            <label for="newEmplacement">Emplacement</label>
+            <select id="newEmplacement" required><option value="">Chargement...</option></select>
+          </div>
+          <div class="form-field">
+            <label for="newStatut">Statut initial</label>
+            <select id="newStatut" required>
+              <option value="Disponible">Disponible</option>
+              <option value="Utilisé">Utilisé</option>
+              <option value="Maintenance">Maintenance</option>
+              <option value="Hors service">Hors service</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="newCommentaire">Commentaire</label>
+            <input id="newCommentaire" type="text" placeholder="Ex : Ajout depuis l’interface">
+          </div>
+          <div class="form-field full">
+            <button type="submit" class="btn-primary">Ajouter l’équipement</button>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <section class="card no-print" id="adminSection">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Référentiels</p>
+          <h2>Administration</h2>
+        </div>
+        <button id="loadAdminReferentielsButton" type="button" class="btn-secondary">Charger les référentiels admin</button>
       </div>
 
-      <div class="form-field">
-        <label for="newFamille">Famille</label>
-        <select id="newFamille" required>
-          <option value="">Chargement des familles...</option>
-        </select>
+      <div class="admin-layout">
+        <div class="admin-forms">
+          <div class="form-field compact-field">
+            <label for="adminPin">Code admin</label>
+            <input id="adminPin" type="password" placeholder="Code admin">
+          </div>
+          <form id="addFamilleForm" class="mini-form">
+            <label for="newNomFamille">Nouvelle famille</label>
+            <input id="newNomFamille" type="text" placeholder="Ex : Électroportatif" required>
+            <button type="submit">Ajouter la famille</button>
+          </form>
+          <form id="addEmplacementForm" class="mini-form">
+            <label for="newNomEmplacement">Nouvel emplacement</label>
+            <input id="newNomEmplacement" type="text" placeholder="Ex : Armoire outils coupants" required>
+            <label for="newDescriptionEmplacement">Description</label>
+            <input id="newDescriptionEmplacement" type="text" placeholder="Ex : Rangement des fraises et forets">
+            <button type="submit">Ajouter l’emplacement</button>
+          </form>
+        </div>
+
+        <div class="admin-ref-grid">
+          <div>
+            <h3>Familles</h3>
+            <div class="table-container">
+              <table class="dense-table">
+                <thead><tr><th>ID</th><th>Famille</th><th>Ordre</th><th>État</th><th>Action</th></tr></thead>
+                <tbody id="adminFamillesBody"><tr><td colspan="5">Aucune famille chargée.</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <h3>Emplacements</h3>
+            <div class="table-container">
+              <table class="dense-table">
+                <thead><tr><th>ID</th><th>Emplacement</th><th>Description</th><th>Ordre</th><th>État</th><th>Action</th></tr></thead>
+                <tbody id="adminEmplacementsBody"><tr><td colspan="6">Aucun emplacement chargé.</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="equipementsSection">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Atelier</p>
+          <h2>Équipements atelier</h2>
+        </div>
+        <div class="view-toggle no-print">
+          <button id="viewCardsButton" type="button" class="active">Cartes</button>
+          <button id="viewTableButton" type="button">Tableau</button>
+        </div>
       </div>
 
-      <div class="form-field">
-        <label for="newEmplacement">Emplacement</label>
-        <select id="newEmplacement" required>
-          <option value="">Chargement des emplacements...</option>
-        </select>
-      </div>
-
-      <div class="form-field">
-        <label for="newStatut">Statut initial</label>
-        <select id="newStatut" required>
+      <div class="filters no-print">
+        <input id="searchInput" type="search" placeholder="Rechercher code, nom, famille, emplacement...">
+        <select id="statusFilter">
+          <option value="">Tous les statuts</option>
           <option value="Disponible">Disponible</option>
           <option value="Utilisé">Utilisé</option>
           <option value="Maintenance">Maintenance</option>
           <option value="Hors service">Hors service</option>
         </select>
+        <select id="familleFilter"><option value="">Toutes les familles</option></select>
       </div>
 
-      <div class="form-field">
-        <label for="newCommentaire">Commentaire</label>
-        <input id="newCommentaire" type="text" placeholder="Ex : Ajout depuis l’interface">
+      <div id="cardsView" class="equipment-card-grid">
+        <p>Aucun équipement chargé.</p>
       </div>
 
-      <div class="form-field full">
-        <button type="submit">Ajouter l’équipement</button>
-      </div>
-    </div>
-  </form>
-</section>
-
-<section class="card">
-  <h2>Administration des référentiels</h2>
-
-  <p class="small">
-    Cette zone permet d’ajouter des familles et des emplacements sans modifier le code.
-    Elle nécessite le code admin.
-  </p>
-
-  <div class="form-field" style="max-width: 260px; margin-bottom: 16px;">
-    <label for="adminPin">Code admin</label>
-    <input id="adminPin" type="password" placeholder="Code admin">
-  </div>
-
-  <div class="form-grid">
-    <form id="addFamilleForm" class="form-field">
-      <label for="newNomFamille">Nouvelle famille</label>
-      <input id="newNomFamille" type="text" placeholder="Ex : Électroportatif" required>
-      <button type="submit">Ajouter la famille</button>
-    </form>
-
-    <form id="addEmplacementForm" class="form-field">
-      <label for="newNomEmplacement">Nouvel emplacement</label>
-      <input id="newNomEmplacement" type="text" placeholder="Ex : Armoire outils coupants" required>
-
-      <label for="newDescriptionEmplacement">Description</label>
-      <input id="newDescriptionEmplacement" type="text" placeholder="Ex : Rangement des fraises et forets">
-
-      <button type="submit">Ajouter l’emplacement</button>
-    </form>
-  </div>
-    <hr>
-
-  <div class="actions">
-    <button id="loadAdminReferentielsButton" type="button">Charger les référentiels admin</button>
-  </div>
-
-  <div class="admin-ref-grid">
-    <div>
-      <h3>Familles</h3>
-      <div class="table-container">
-        <table>
+      <div id="tableView" class="table-container" hidden>
+        <table class="dense-table">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Famille</th>
-              <th>Ordre</th>
-              <th>État</th>
-              <th>Action</th>
+              <th>Code</th><th>Nom</th><th>Famille</th><th>Emplacement</th><th>Statut actuel</th><th>Nouveau statut</th><th>Commentaire</th><th>Fiche</th><th>QR</th><th>Action</th>
             </tr>
           </thead>
-          <tbody id="adminFamillesBody">
-            <tr>
-              <td colspan="5">Aucune famille chargée.</td>
-            </tr>
-          </tbody>
+          <tbody id="equipementsBody"><tr><td colspan="10">Aucune donnée chargée.</td></tr></tbody>
         </table>
       </div>
-    </div>
+    </section>
 
-    <div>
-      <h3>Emplacements</h3>
+    <section class="card" id="historiqueSection">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Traçabilité</p>
+          <h2>Historique des changements</h2>
+        </div>
+      </div>
       <div class="table-container">
-        <table>
+        <table class="dense-table">
           <thead>
-            <tr>
-              <th>ID</th>
-              <th>Emplacement</th>
-              <th>Description</th>
-              <th>Ordre</th>
-              <th>État</th>
-              <th>Action</th>
-            </tr>
+            <tr><th>Date / heure</th><th>Code</th><th>Nom</th><th>Ancien statut</th><th>Nouveau statut</th><th>Ancien commentaire</th><th>Nouveau commentaire</th><th>Source</th></tr>
           </thead>
-          <tbody id="adminEmplacementsBody">
-            <tr>
-              <td colspan="6">Aucun emplacement chargé.</td>
-            </tr>
-          </tbody>
+          <tbody id="historiqueBody"><tr><td colspan="8">Aucun historique chargé.</td></tr></tbody>
         </table>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
 
-  <section class="card">
-    <h2>Équipements atelier</h2>
+    <section class="card debug-card no-print">
+      <details>
+        <summary>Réponse brute JSON</summary>
+        <pre id="rawJson">Aucune réponse pour le moment.</pre>
+      </details>
+    </section>
+  </main>
 
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Code</th>
-            <th>Nom</th>
-            <th>Famille</th>
-            <th>Emplacement</th>
-            <th>Statut actuel</th>
-            <th>Nouveau statut</th>
-            <th>Commentaire</th>
-            <th>Fiche</th>
-            <th>QR</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="equipementsBody">
-          <tr>
-            <td colspan="10">Aucune donnée chargée.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <section class="card">
-    <h2>Historique des changements</h2>
-
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Date / heure</th>
-            <th>Code</th>
-            <th>Nom</th>
-            <th>Ancien statut</th>
-            <th>Nouveau statut</th>
-            <th>Ancien commentaire</th>
-            <th>Nouveau commentaire</th>
-            <th>Source</th>
-          </tr>
-        </thead>
-        <tbody id="historiqueBody">
-          <tr>
-            <td colspan="8">Aucun historique chargé.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <section class="card">
-    <h2>Réponse brute JSON</h2>
-    <pre id="rawJson">Aucune réponse pour le moment.</pre>
-  </section>
-
-<script src="app.js?v=100"></script>
+  <script src="app.js?v=110"></script>
 </body>
 </html>

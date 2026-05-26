@@ -37,3 +37,18 @@ Exemple :
 ```text
 https://louistaffini-debug.github.io/atelier-stock-manager/?source=sheet
 ```
+
+## V1.1 - Refonte visuelle hybride
+
+Cette version conserve le socle V1.0 avec Grist comme base officielle et ajoute une refonte visuelle inspirée d'un tableau métier :
+
+- thème sombre moderne ;
+- navigation latérale ;
+- tableau de bord d'indicateurs ;
+- vue cartes des équipements ;
+- vue tableau dense ;
+- filtres par recherche, statut et famille ;
+- préparation visuelle du futur module Magasin / composants ;
+- conservation du mode secours Google Sheet avec `?source=sheet`.
+
+Cette version ne modifie pas le backend Apps Script.

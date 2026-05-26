@@ -12,6 +12,8 @@
 
     let familles = [];
     let emplacements = [];
+    let currentEquipements = [];
+    let currentView = "cards";
 
     const loadButton = document.getElementById("loadButton");
     const historyButton = document.getElementById("historyButton");
@@ -29,6 +31,14 @@
     const equipementsBody = document.getElementById("equipementsBody");
     const historiqueBody = document.getElementById("historiqueBody");
     const rawJson = document.getElementById("rawJson");
+    const searchInput = document.getElementById("searchInput");
+    const statusFilter = document.getElementById("statusFilter");
+    const familleFilter = document.getElementById("familleFilter");
+    const cardsView = document.getElementById("cardsView");
+    const tableView = document.getElementById("tableView");
+    const viewCardsButton = document.getElementById("viewCardsButton");
+    const viewTableButton = document.getElementById("viewTableButton");
+    const magasinPreview = document.getElementById("magasinPreview");
 
     loadButton.addEventListener("click", loadEquipements);
     historyButton.addEventListener("click", loadHistorique);
@@ -38,6 +48,15 @@
     addEmplacementForm.addEventListener("submit", addEmplacement);
 
     loadAdminReferentielsButton.addEventListener("click", loadAdminReferentiels);
+
+    if (searchInput) searchInput.addEventListener("input", refreshEquipementViews);
+    if (statusFilter) statusFilter.addEventListener("change", refreshEquipementViews);
+    if (familleFilter) familleFilter.addEventListener("change", refreshEquipementViews);
+    if (viewCardsButton) viewCardsButton.addEventListener("click", () => setEquipmentView("cards"));
+    if (viewTableButton) viewTableButton.addEventListener("click", () => setEquipmentView("table"));
+    document.querySelectorAll(".module-tab").forEach(button => {
+      button.addEventListener("click", () => setModuleBoard(button.dataset.board));
+    });
     initSourceMode();
     loadReferentiels();
 
@@ -98,9 +117,15 @@ function initSourceMode() {
     ? "Mode actif : <strong>Grist officiel</strong>. Base principale de l’application atelier."
     : "Mode secours : <strong>Google Sheet</strong>. À utiliser uniquement en repli temporaire.";
 
-  const firstCard = document.querySelector("section.card");
-  if (firstCard) {
-    firstCard.insertBefore(modeBar, firstCard.firstChild);
+  const modeSlot = document.querySelector(".mode-slot");
+  if (modeSlot) {
+    modeSlot.innerHTML = "";
+    modeSlot.appendChild(modeBar);
+  } else {
+    const firstCard = document.querySelector("section.card");
+    if (firstCard) {
+      firstCard.insertBefore(modeBar, firstCard.firstChild);
+    }
   }
 
   const actions = document.querySelector(".actions");
@@ -197,11 +222,13 @@ async function loadEmplacements() {
 
 function renderFamillesSelect() {
   const select = document.getElementById("newFamille");
+  if (!select) return;
 
   select.innerHTML = "";
 
   if (!familles || familles.length === 0) {
     select.innerHTML = "<option value=''>Aucune famille disponible</option>";
+    renderFamillesFilter();
     return;
   }
 
@@ -213,10 +240,26 @@ function renderFamillesSelect() {
     option.textContent = famille.nomFamille;
     select.appendChild(option);
   });
+
+  renderFamillesFilter();
+}
+
+function renderFamillesFilter() {
+  if (!familleFilter) return;
+  const current = familleFilter.value;
+  familleFilter.innerHTML = "<option value=''>Toutes les familles</option>";
+  (familles || []).forEach(famille => {
+    const option = document.createElement("option");
+    option.value = famille.nomFamille;
+    option.textContent = famille.nomFamille;
+    familleFilter.appendChild(option);
+  });
+  familleFilter.value = current;
 }
 
 function renderEmplacementsSelect() {
   const select = document.getElementById("newEmplacement");
+  if (!select) return;
 
   select.innerHTML = "";
 
@@ -696,6 +739,41 @@ function isReferenceActive(value) {
     }
 
     function renderEquipements(equipements) {
+      currentEquipements = equipements || [];
+      refreshEquipementViews();
+    }
+
+    function refreshEquipementViews() {
+      const equipements = applyEquipementFilters(currentEquipements || []);
+      renderEquipementsTable(equipements);
+      renderEquipementsCards(equipements);
+      updateDashboard(currentEquipements || []);
+    }
+
+    function applyEquipementFilters(equipements) {
+      const search = (searchInput?.value || "").trim().toLowerCase();
+      const statut = statusFilter?.value || "";
+      const famille = familleFilter?.value || "";
+
+      return (equipements || []).filter(equipement => {
+        const text = [
+          equipement.code,
+          equipement.nom,
+          equipement.famille,
+          equipement.emplacement,
+          equipement.statut,
+          equipement.commentaire
+        ].join(" ").toLowerCase();
+
+        const matchSearch = !search || text.includes(search);
+        const matchStatut = !statut || String(equipement.statut || "") === statut;
+        const matchFamille = !famille || String(equipement.famille || "") === famille;
+
+        return matchSearch && matchStatut && matchFamille;
+      });
+    }
+
+    function renderEquipementsTable(equipements) {
       equipementsBody.innerHTML = "";
 
       if (!equipements || equipements.length === 0) {
@@ -711,7 +789,7 @@ function isReferenceActive(value) {
         const commentaire = String(equipement.commentaire || "");
 
         row.innerHTML = `
-          <td>${escapeHtml(equipement.code)}</td>
+          <td><strong>${escapeHtml(equipement.code)}</strong></td>
           <td>${escapeHtml(equipement.nom)}</td>
           <td>${escapeHtml(equipement.famille)}</td>
           <td>${escapeHtml(equipement.emplacement)}</td>
@@ -735,12 +813,116 @@ function isReferenceActive(value) {
             </a>
           </td>
           <td>
-            <button onclick="saveStatut('${id}')">${IS_GRIST_MODE ? "Enregistrer Grist" : "Enregistrer"}</button>
+            <button onclick="saveStatut('${id}')">${IS_GRIST_MODE ? "Enregistrer" : "Enregistrer"}</button>
           </td>
         `;
 
         equipementsBody.appendChild(row);
       });
+    }
+
+    function renderEquipementsCards(equipements) {
+      if (!cardsView) return;
+      cardsView.innerHTML = "";
+
+      if (!equipements || equipements.length === 0) {
+        cardsView.innerHTML = "<p>Aucun équipement trouvé.</p>";
+        return;
+      }
+
+      equipements.forEach(equipement => {
+        const statut = String(equipement.statut || "");
+        const id = String(equipement.id || "");
+        const card = document.createElement("article");
+        card.className = "equipment-card";
+        card.innerHTML = `
+          <div class="equipment-visual">
+            <div class="equipment-icon">${escapeHtml(getFamilyIcon(equipement.famille))}</div>
+          </div>
+          <div class="equipment-card-body">
+            <div class="equipment-card-head">
+              <div>
+                <h3>${escapeHtml(equipement.code || id)}</h3>
+                <p>${escapeHtml(equipement.nom || "")}</p>
+              </div>
+              ${renderStatut(statut)}
+            </div>
+            <div class="card-meta">
+              <span>${escapeHtml(equipement.famille || "Non classé")}</span>
+              <span>${escapeHtml(equipement.emplacement || "Emplacement à préciser")}</span>
+            </div>
+            <p class="card-comment">${escapeHtml(equipement.commentaire || "Aucun commentaire")}</p>
+            <div class="card-actions">
+              <a href="${buildPageUrl("fiche.html", { id })}" target="_blank"><button type="button" class="btn-secondary">Fiche</button></a>
+              <a href="${buildPageUrl("qrcodes.html", { id })}" target="_blank"><button type="button" class="btn-secondary">QR</button></a>
+            </div>
+          </div>
+        `;
+        cardsView.appendChild(card);
+      });
+    }
+
+    function updateDashboard(equipements) {
+      const counters = {
+        total: (equipements || []).length,
+        Disponible: 0,
+        Utilisé: 0,
+        Maintenance: 0,
+        "Hors service": 0
+      };
+
+      (equipements || []).forEach(equipement => {
+        const statut = String(equipement.statut || "");
+        if (Object.prototype.hasOwnProperty.call(counters, statut)) {
+          counters[statut] += 1;
+        }
+      });
+
+      setMetric("metricTotal", counters.total);
+      setMetric("metricDisponible", counters.Disponible);
+      setMetric("metricUtilise", counters.Utilisé);
+      setMetric("metricMaintenance", counters.Maintenance);
+      setMetric("metricHorsService", counters["Hors service"]);
+    }
+
+    function setMetric(id, value) {
+      const element = document.getElementById(id);
+      if (element) element.textContent = value;
+    }
+
+    function getFamilyIcon(famille) {
+      const value = String(famille || "").toLowerCase();
+      if (value.includes("métro")) return "⌖";
+      if (value.includes("outil")) return "⚙";
+      if (value.includes("frais")) return "▣";
+      if (value.includes("tourn")) return "◉";
+      return "◆";
+    }
+
+    function setEquipmentView(view) {
+      currentView = view;
+      if (cardsView) cardsView.hidden = view !== "cards";
+      if (tableView) tableView.hidden = view !== "table";
+      if (viewCardsButton) viewCardsButton.classList.toggle("active", view === "cards");
+      if (viewTableButton) viewTableButton.classList.toggle("active", view === "table");
+    }
+
+    function setModuleBoard(board) {
+      document.querySelectorAll(".module-tab").forEach(button => {
+        button.classList.toggle("active", button.dataset.board === board);
+      });
+
+      if (magasinPreview) {
+        magasinPreview.hidden = board === "atelier";
+      }
+
+      if (board === "magasin" && magasinPreview) {
+        magasinPreview.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      if (board === "atelier") {
+        document.getElementById("equipementsSection")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
 
     function renderHistorique(historique) {
